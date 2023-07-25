@@ -134,10 +134,7 @@ sub extract_domain ( $self, $line ) {
 	$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
 	return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
 
-	$line = lc $line;
-
-	my $domain = $self->contains_domain($line);
-	return $domain;
+	return $self->contains_domain( lc($line) );
 }
 
 =head1 AUTHOR
