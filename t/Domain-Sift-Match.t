@@ -43,36 +43,36 @@ subtest 'has_valid_tld' => sub {
 	);
 };
 
-subtest 'is_domain' => sub {
+subtest 'contains_domain' => sub {
 	## Test valid domains
 	ok(
-		$sift_match->is_domain("example.com"),
+		$sift_match->contains_domain("example.com"),
 		"Valid domain"
 	);
 	ok(
-		$sift_match->is_domain("subdomain.example.com"),
+		$sift_match->contains_domain("subdomain.example.com"),
 		"Valid domain with subdomain"
 	);
 	ok(
-		$sift_match->is_domain("xn--fiq228c.com"),
+		$sift_match->contains_domain("xn--fiq228c.com"),
 		"Valid punycode domain"
 	);
 
 	# Test invalid domains
 	ok(
-		!$sift_match->is_domain("example"),
+		!$sift_match->contains_domain("example"),
 		"Invalid domain"
 	);
 	ok(
-		!$sift_match->is_domain("example..com"),
+		!$sift_match->contains_domain("example..com"),
 		"Invalid domain with double dot"
 	);
 	ok(
-		!$sift_match->is_domain("example_com"),
+		!$sift_match->contains_domain("example_com"),
 		"Invalid domain with underscore"
 	);
 	ok(
-		!$sift_match->is_domain("example.qrf7zdk"),
+		!$sift_match->contains_domain("example.qrf7zdk"),
 		"Invalid domain with bogus top-level domain"
 	);
 };

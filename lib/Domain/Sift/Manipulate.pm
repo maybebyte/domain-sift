@@ -4,7 +4,7 @@ use v5.36;
 
 =head1 NAME
 
-Domain::Sift::Manipulate - sift through domains
+Domain::Sift::Manipulate - manipulate domains
 
 =head1 VERSION
 
@@ -16,7 +16,7 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Manipulate a hash reference containing domains.
+Manipulate domains.
 
     use Domain::Sift::Manipulate;
 

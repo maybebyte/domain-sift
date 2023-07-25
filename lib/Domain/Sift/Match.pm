@@ -16,7 +16,7 @@ C<Domain::Sift::Match> offers a set of methods for matching domains.
     my $example_domain = 'example.com';
 
     my $is_valid_tld = $sift_match->has_valid_tld($example_domain);
-    my $valid_domain = $sift_match->is_domain($example_domain);
+    my $valid_domain = $sift_match->contains_domain($example_domain);
 
 =head1 SUBROUTINES/METHODS
 
@@ -53,19 +53,19 @@ sub has_valid_tld ( $self, $domain ){
 	return exists $self->{valid_tlds}{ uc($tld) }
 }
 
-=head2 is_domain
+=head2 contains_domain
 
-    my $valid_domain = $sift_match->is_domain($example_domain);
+    my $valid_domain = $sift_match->contains_domain($example_domain);
 
-Evaluates if a provided string is a valid domain name. is_domain applies
+Evaluates if a provided string is a valid domain name. contains_domain applies
 pattern matching to confirm that the domain is formatted correctly and
 checks the top-level domain (TLD) against a preloaded list of valid
 TLDs. Returns the domain if the string matches the established domain
-pattern and has a valid TLD. Otherwise is_domain returns undef.
+pattern and has a valid TLD. Otherwise contains_domain returns undef.
 
 =cut
 
-sub is_domain ( $self, $example_domain ) {
+sub contains_domain ( $self, $example_domain ) {
 	if (
 		$example_domain =~ /
 
@@ -136,7 +136,7 @@ sub extract_domain ( $self, $line ) {
 
 	$line = lc $line;
 
-	my $domain = $self->is_domain($line);
+	my $domain = $self->contains_domain($line);
 	return $domain;
 }
 
