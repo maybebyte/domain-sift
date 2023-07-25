@@ -26,18 +26,18 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Domain::SiftUtils
+    perldoc Domain::Sift
 
 You can also look for information at:
 
     RT, CPAN's request tracker (report bugs here)
-        https://rt.cpan.org/NoAuth/Bugs.html?Dist=Domain-SiftUtils
+        https://rt.cpan.org/NoAuth/Bugs.html?Dist=Domain-Sift
 
     CPAN Ratings
-        https://cpanratings.perl.org/d/Domain-SiftUtils
+        https://cpanratings.perl.org/d/Domain-Sift
 
     Search CPAN
-        https://metacpan.org/release/Domain-SiftUtils
+        https://metacpan.org/release/Domain-Sift
 
 
 LICENSE AND COPYRIGHT
