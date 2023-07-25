@@ -10,7 +10,6 @@ my %WriteMakefileArgs = (
     ABSTRACT_FROM    => 'lib/Domain/Sift.pm',
     LICENSE          => 'open_source',
     MIN_PERL_VERSION => '5.006',
-	INSTALLDIRS      => 'perl',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
