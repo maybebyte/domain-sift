@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
     },
 	EXE_FILES => [ 'bin/domain-sift' ],
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES => 'Domain-SiftUtils-*' },
+    clean => { FILES => 'Domain-Sift-*' },
 );
 
 # Compatibility with old versions of ExtUtils::MakeMaker
