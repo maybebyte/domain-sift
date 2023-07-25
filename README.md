@@ -1,4 +1,4 @@
-# Domain-Sift
+# domain-sift
 
 This is a collection of Perl code used for matching, manipulating, and
 sifting through domains. Included in this repository along with reusable
