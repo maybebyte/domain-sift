@@ -10,7 +10,7 @@ in several different formats.
 1. [Installation](#installation)
 2. [Documentation](#documentation)
 3. [Project structure](#project-structure)
-4. [domain-sift](#domain-sift)
+4. [domain-sift](#domain-sift-1)
     - [Using domain-sift with unwind](#using-domain-sift-with-unwind)
     - [Using domain-sift with unbound](#using-domain-sift-with-unbound)
     - [Using domain-sift with a Response Policy Zone](#using-domain-sift-with-a-response-policy-zone-rpz)
