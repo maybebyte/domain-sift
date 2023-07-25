@@ -1,0 +1,170 @@
+#!/usr/bin/env perl
+# Copyright (c) 2022-2023 Ashlen <dev@anthes.is>
+
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+=head1 NAME
+
+domain-sift - extract and format unique domains
+
+=head1 SYNOPSIS
+
+B<domain-sift> [B<-h>] [B<-f> I<format>] [F<file> F<...>]
+
+=head1 DESCRIPTION
+
+The B<domain-sift> utility extracts unique domains from at least one
+provided F<file> and prints them to standard output. If no F<file> is
+provided, B<domain-sift> reads from standard input instead.
+
+One use of this utility is to extract domains from blocklists that
+contain known malicious or otherwise undesirable domains, and then
+format them in such a way that those domains can be blocked by a
+DNS resolver.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-f>
+
+Specify the output format for the extracted domains. Types:
+
+=over
+
+=item I<plain>
+
+Prints one domain per line (default).
+
+=item I<unbound>
+
+Prints domains so that L<unbound(8)> can block them:
+
+    local-zone: "example.com" always_refuse
+
+=item I<rpz>
+
+Prints domains like so, following the Response Policy Zone (RPZ) format:
+
+    example.com CNAME .
+    *.example.com CNAME .
+
+I<rpz> also reduces domains to avoid unnecessary duplication. For example,
+if C<example.com> and C<subdomain.example.com> are present, only C<example.com>
+will be included because the wildcard will match C<subdomain.example.com>.
+
+=back
+
+=item B<-h>
+
+Display the help message and exit.
+
+=back
+
+=head1 EXIT STATUS
+
+B<domain-sift> exits 0 on success, and >0 if an error occurs.
+
+=head1 EXAMPLES
+
+To extract unique domains from a F<file> and print them out in I<plain>
+format:
+
+    $ domain-sift /path/to/file
+
+To extract unique domains from a F<file> and print them out in
+I<unbound> format:
+
+    $ domain-sift -f unbound /path/to/file
+
+To extract unique domains from standard input and print them out in
+I<rpz> format:
+
+    $ cat /path/to/file | domain-sift -f rpz
+
+=cut
+
+use v5.36;
+use autodie;
+
+use English;
+use File::Basename qw(fileparse);
+use Getopt::Std;
+
+use Domain::Sift::Match;
+use Domain::Sift::Manipulate;
+
+BEGIN {
+	if ( $OSNAME eq 'openbsd' ) {
+		require OpenBSD::Pledge;
+		OpenBSD::Pledge->import('pledge');
+	}
+	else {
+		sub pledge { return 1; }
+	}
+}
+
+sub pledge_or_die (@syscalls) {
+	pledge @syscalls or die "Pledge failed: $OS_ERROR";
+}
+
+sub usage {
+	my $program_name = fileparse $0;
+	die <<"EOT";
+$program_name [-h] [-f format] [file ...]
+See $program_name(1).
+EOT
+}
+
+pledge_or_die qw(rpath);
+
+our %options;
+$options{f} = 'plain';
+
+getopts 'hf:', \%options;
+usage if $options{h};
+
+my @formats = qw(plain unbound rpz);
+grep { $options{f} eq $ARG } @formats
+	or die "$options{f} is not a valid format.\n";
+
+my $sift_match = Domain::Sift::Match->new();
+my %unique_domains;
+
+while ( <<>> ) {
+	my $domain = $sift_match->extract_domain($ARG) or next;
+	$unique_domains{$domain}++;
+}
+
+# XXX: Instead of sorting the entire thing at the end, maybe use a
+# binary tree to maintain a sorted array? This could lead to an
+# improvement in performance.
+if ( $options{f} eq 'plain' ) {
+	for ( sort keys %unique_domains ) {
+		say;
+	}
+}
+elsif ( $options{f} eq 'unbound' ) {
+	for ( sort keys %unique_domains ) {
+		say "local-zone: \"$ARG\" always_refuse";
+	}
+}
+elsif ( $options{f} eq 'rpz' ) {
+	my $sift_manipulate = Domain::Sift::Manipulate->new();
+	$sift_manipulate->reduce_domains( \%unique_domains );
+
+	for ( sort keys %unique_domains ) {
+		say "$ARG CNAME .";
+		say "*.$ARG CNAME .";
+	}
+}
