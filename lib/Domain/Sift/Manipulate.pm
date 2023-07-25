@@ -1,18 +1,9 @@
 package Domain::Sift::Manipulate;
-
 use v5.36;
 
 =head1 NAME
 
 Domain::Sift::Manipulate - manipulate domains
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
