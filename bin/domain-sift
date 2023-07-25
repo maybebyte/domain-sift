@@ -131,7 +131,6 @@ sub usage {
 	my $program_name = fileparse $0;
 	die <<"EOT";
 $program_name [-h] [-f format] [file ...]
-See $program_name(1).
 EOT
 }
 
