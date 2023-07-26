@@ -38,8 +38,8 @@ subtest 'has_valid_tld' => sub {
 		"stackoverflow is not a valid TLD"
 	);
 	ok(
-		!$sift_match->has_valid_tld("lwwbae0n03"),
-		"lwwbae0n03 is not a valid TLD"
+		!$sift_match->has_valid_tld("lwq"),
+		"lwq is not a valid TLD"
 	);
 };
 
@@ -72,8 +72,8 @@ subtest 'contains_domain' => sub {
 		"Invalid domain with underscore"
 	);
 	ok(
-		!$sift_match->contains_domain("example.qrf7zdk"),
-		"Invalid domain with bogus top-level domain"
+		!$sift_match->contains_domain("example.qrf"),
+		"Invalid domain with bogus top-level domain (qrf)"
 	);
 };
 
@@ -87,32 +87,86 @@ subtest 'extract_domain' => sub {
 	# Test for commented line
 	is(
 		$sift_match->extract_domain("# example.com"),
-		undef, "Commented line should be skipped"
+		undef, "Commented line should be skipped (space between)"
+	);
+	is(
+		$sift_match->extract_domain("#example.com"),
+		undef, "Commented line should be skipped (no space between)"
+	);
+	is(
+		$sift_match->extract_domain(" " x 5 . "# example.com"),
+		undef, "Commented line should be skipped (5 spaces)"
+	);
+	is(
+		$sift_match->extract_domain("\t" x 5 . "# example.com"),
+		undef, "Commented line should be skipped (5 tabs)"
+	);
+	is(
+		$sift_match->extract_domain(" \t" x 5 . "# example.com"),
+		undef, "Commented line should be skipped (5 spaces + 5 tabs)"
 	);
 
 	# Test for blank line
 	is(
 		$sift_match->extract_domain(""),
-		undef, "Blank line should be skipped"
+		undef, "Blank line should be skipped (empty string)"
 	);
+	is(
+		$sift_match->extract_domain("\n"),
+		undef, "Blank line should be skipped (newline)"
+	);
+	is(
+		$sift_match->extract_domain(" " x 5),
+		undef, "Blank line should be skipped (5 spaces)"
+	);
+	is(
+		$sift_match->extract_domain("\t" x 5),
+		undef, "Blank line should be skipped (5 tabs)"
+	);
+	is(
+		$sift_match->extract_domain(" \t" x 5),
+		undef, "Blank line should be skipped (5 spaces + 5 tabs)"
+	);
+	is(
+		$sift_match->extract_domain(" \t\n"),
+		undef, "Blank line should be skipped (space + tab + newline)"
+	);
+
 
 	# Test for line with leading IP address
 	is(
 		$sift_match->extract_domain("127.0.0.1 example.com"),
-		"example.com", "Leading IP address should be removed"
+		"example.com", "Leading 127.0.0.1 should be ignored"
+	);
+	is(
+		$sift_match->extract_domain(" \t127.0.0.1 \texample.com"),
+		"example.com", "Leading 127.0.0.1 should be ignored (spaces + tabs)"
+	);
+	is(
+		$sift_match->extract_domain("0.0.0.0 example.com"),
+		"example.com", "Leading 0.0.0.0 should be ignored"
+	);
+	is(
+		$sift_match->extract_domain(" \t0.0.0.0 \texample.com"),
+		"example.com", "Leading 0.0.0.0 should be ignored (spaces + tabs)"
 	);
 
 	# Test for line with IP address at the end of a word
 	is(
 		$sift_match->extract_domain("example.com127.0.0.1"),
 		undef,
-		"Line with IP address at the end of a word should be skipped"
+		"Line with 127.0.0.1 at the end of a word should be skipped"
+	);
+	is(
+		$sift_match->extract_domain("example.com0.0.0.0"),
+		undef,
+		"Line with 0.0.0.0 at the end of a word should be skipped"
 	);
 
 	# Test for case-insensitive domain name
 	is(
 		$sift_match->extract_domain("EXAMPLE.COM"),
-		"example.com", "Domain name should be converted to lowercase"
+		"example.com", "EXAMPLE.COM should be converted to example.com"
 	);
 
 	# Test for longer lines
