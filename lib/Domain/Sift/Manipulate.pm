@@ -28,7 +28,7 @@ Manipulate domains.
     my $sift_manipulate = Domain::Sift::Manipulate->new();
     my %domains = ( 'example.com', 'subdomain.example.com' );
 
-	# remove subdomain.example.com since *.example.com would match it
+    # remove subdomain.example.com since *.example.com would match it
     $sift_manipulate->reduce_domains(\%domains);
 
 =head1 SUBROUTINES/METHODS
@@ -48,7 +48,7 @@ sub new ($class) {
 
 =head2 reduce_domains
 
-	my $redundant_domains = $sift_manipulate->reduce_domains(\%example_domains);
+    my $redundant_domains = $sift_manipulate->reduce_domains(\%example_domains);
 
 Receives a reference to a hash of domain names and identifies redundant
 domains. If a domain and a subdomain are both keys in the hash, the

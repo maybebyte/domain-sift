@@ -22,7 +22,7 @@ Domain::Sift::Match - tools that match domains inside strings
 
 =head1 SYNOPSIS
 
-C<Domain::Sift::Match> offers a set of methods for matching domains.
+Domain::Sift::Match offers a set of methods for matching domains.
 
     use Domain::Sift::Match;
 
@@ -133,7 +133,7 @@ sub contains_domain ( $self, $example_domain ) {
 
 =head2 extract_domain
 
-	my $extracted_domain = $sift_match->extract_domain($example_line);
+    my $extracted_domain = $sift_match->extract_domain($example_line);
 
 Extracts and returns a domain from a given line of text, if present. It
 ignores comments and blank lines and skips lines containing certain IP

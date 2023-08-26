@@ -135,7 +135,7 @@ EOT
 }
 
 if ( !@ARGV ) {
-	unveil_or_die map { $ARG, 'r' } @INC;
+	unveil_or_die map { ( $ARG, 'r' ) } @INC;
 }
 pledge_or_die qw(rpath);
 
