@@ -54,7 +54,7 @@ following commands inside the source directory. Note that domain-sift
 requires Perl 5.36 or later, since subroutine signatures are no
 longer experimental in that release.
 
-```
+```sh
 $ perl Makefile.PL
 $ make
 $ make test
@@ -66,13 +66,12 @@ $ make test
 After installation, you can read the documentation with `perldoc`.
 `man` often works as well.
 
-```
+```sh
 $ perldoc Domain::Sift
 $ perldoc Domain::Sift::Match
 $ perldoc Domain::Sift::Manipulate
 $ perldoc domain-sift
 ```
-
 
 ## domain-sift and unwind
 
@@ -81,13 +80,13 @@ Here's how to use `domain-sift` with
 
 1. Extract domains from your blocklist source:
 
-```
+```sh
 $ domain-sift /path/to/blocklist_source > blocklist
 ```
 
 2. Move your blocklist to `/etc/blocklist`:
 
-```
+```sh
 # mv blocklist /etc/blocklist
 ```
 
@@ -99,7 +98,7 @@ block list "/etc/blocklist"
 
 4. Restart `unwind`:
 
-```
+```sh
 # rcctl restart unwind
 ```
 
@@ -110,13 +109,13 @@ Here's how to use `domain-sift` with
 
 1. Extract domains from your blocklist source:
 
-```
+```sh
 $ domain-sift -f unbound /path/to/blocklist_source > blocklist
 ```
 
 2. Move the blocklist to `/var/unbound/etc`.
 
-```
+```sh
 # mv blocklist /var/unbound/etc/blocklist
 ```
 
@@ -128,7 +127,7 @@ include: "/var/unbound/etc/blocklist"
 
 4. Restart `unbound`:
 
-```
+```sh
 # rcctl restart unbound
 ```
 
@@ -147,7 +146,7 @@ Here's how to use `domain-sift` with Unbound and RPZ on OpenBSD.
 
 1. Extract domains from your blocklist source:
 
-```
+```sh
 $ domain-sift -f rpz /path/to/blocklist_source > blocklist
 ```
 
@@ -183,13 +182,13 @@ $INCLUDE /var/unbound/etc/blocklist
 
 4. Make sure that you move `blocklist` to the correct location:
 
-```
+```sh
 # mv /path/to/blocklist /var/unbound/etc/blocklist
 ```
 
 5. Restart Unbound:
 
-```
+```sh
 # rcctl restart unbound
 ```
 
@@ -212,7 +211,7 @@ This is an explicit part of its design for a few reasons.
 
 Here is more or less what I use to fetch blocklists:
 
-```
+```sh
 $ grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
 ```
 
@@ -225,7 +224,7 @@ If you've pulled in a lot of domains, Unbound may fail to start on
 OpenBSD because it doesn't have enough time to process all of them.
 You can fix this by increasing Unbound's timeout value.
 
-```
+```sh
 $ rcctl get unbound timeout
 30
 # rcctl set unbound timeout 120
