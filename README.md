@@ -57,8 +57,8 @@ $ make install
 
 ## Documentation
 
-After installation, you can find documentation with `perldoc`. `man`
-often works as well.
+After installation, you can read the documentation with `perldoc`.
+`man` often works as well.
 
 ```
 $ perldoc Domain::Sift
@@ -69,8 +69,9 @@ $ perldoc domain-sift
 
 ## domain-sift and unwind
 
-To use `domain-sift` with `unwind.conf(5)`, you need to generate the blocklist
-in `plain` format, which is the default setting of `domain-sift`.
+To use `domain-sift` with `unwind.conf(5)`, you need to generate
+the blocklist in `plain` format, which is the default setting of
+`domain-sift`.
 
 Here are the steps to follow:
 
@@ -88,8 +89,8 @@ block list "/path/to/blocklist"
 
 ## domain-sift and unbound
 
-`domain-sift` has the `unbound` output format, which generates a blocklist
-that's compatible with `unbound.conf(5)`.
+`domain-sift` has the `unbound` output format, which generates a
+blocklist that's compatible with `unbound.conf(5)`.
 
 Here are the steps:
 
@@ -107,11 +108,12 @@ include: "/path/to/blocklist"
 
 ## domain-sift and a Response Policy Zone (RPZ)
 
-`domain-sift` also supports the Response Policy Zone (RPZ) format. [RPZ is
-defined in this Internet
-Draft](https://datatracker.ietf.org/doc/draft-vixie-dnsop-dns-rpz/). By
-using RPZ, you can define DNS blocking policies in a standardized way. A
-nice perk of using RPZ is the ability to block wildcarded domains.
+`domain-sift` also supports the Response Policy Zone (RPZ) format.
+[RPZ is defined in this Internet
+Draft](https://datatracker.ietf.org/doc/draft-vixie-dnsop-dns-rpz/).
+By using RPZ, you can define DNS blocking policies in a standardized
+way. A nice perk of using RPZ is the ability to block wildcarded
+domains.
 
 Here are the steps to generate and use RPZ with Unbound:
 
@@ -133,15 +135,16 @@ rpz:
 
 NOTE: `rpz.home.arpa` is just an example. The name entry may be
 different in your case. In a local access network (LAN) where Unbound
-runs on the gateway/router, ensure that a `local-data` entry is present
-somewhere so that the name you chose resolves. Something like this
-should work:
+runs on the gateway/router, ensure that a `local-data` entry is
+present somewhere so that the name you chose resolves. Something
+like this should work:
 
 ```
 local-data: "rpz.home.arpa. IN A x.x.x.x"
 ```
 
-You'll need to replace `x.x.x.x` with the machine's actual IP address.
+You'll need to replace `x.x.x.x` with the machine's actual IP
+address.
 
 3. Create `/var/unbound/etc/rpz-block.zone`:
 
@@ -158,7 +161,7 @@ $INCLUDE /var/unbound/etc/blocklist
 
 ## License
 
-This software is Copyright (c) 2023 by Ashlen.
+This software is Copyright © 2023 by Ashlen.
 
-This is free software, licensed under the ISC License. For more details,
-see the `LICENSE` file in the project root.
+This is free software, licensed under the ISC License. For more
+details, see the `LICENSE` file in the project root.
