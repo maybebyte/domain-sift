@@ -81,13 +81,19 @@ Here's how to use `domain-sift` with
 $ domain-sift /path/to/blocklist_source > blocklist
 ```
 
-2. Then, modify your `unwind.conf` to include your new blocklist:
+2. Move your blocklist to `/etc/blocklist`:
 
 ```
-block list "/path/to/blocklist"
+# mv blocklist /etc/blocklist
 ```
 
-3. Restart `unwind`.
+3. Then, modify your `unwind.conf` to include your new blocklist:
+
+```
+block list "/etc/blocklist"
+```
+
+4. Restart `unwind`:
 
 ```
 # rcctl restart unwind
@@ -116,7 +122,7 @@ $ domain-sift -f unbound /path/to/blocklist_source > blocklist
 include: "/var/unbound/etc/blocklist"
 ```
 
-4. Restart `unbound`.
+4. Restart `unbound`:
 
 ```
 # rcctl restart unbound
@@ -171,13 +177,13 @@ $ORIGIN rpz.home.arpa.
 $INCLUDE /var/unbound/etc/blocklist
 ```
 
-4. Make sure that you move `blocklist` to the correct location.
+4. Make sure that you move `blocklist` to the correct location:
 
 ```
 # mv /path/to/blocklist /var/unbound/etc/blocklist
 ```
 
-5. Restart Unbound.
+5. Restart Unbound:
 
 ```
 # rcctl restart unbound
