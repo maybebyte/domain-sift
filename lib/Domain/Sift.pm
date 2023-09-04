@@ -16,7 +16,7 @@ package Domain::Sift;
 # ABSTRACT: tools to sift through domains
 
 use v5.36;
-our $VERSION = '0.1.1';
+our $VERSION = '0.1.2';
 
 =head1 NAME
 
@@ -24,7 +24,7 @@ Domain::Sift - tools to sift through domains
 
 =head1 VERSION
 
-Version 0.1.1
+Version 0.1.2
 
 =cut
 1; # End of Domain::Sift;
