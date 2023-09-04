@@ -2,13 +2,13 @@
 
 `domain-sift` is a Perl script that extracts unique domains from
 at least one provided file and prints them to standard output in a
-given format. If no file is provided, domain-sift reads from standard
-input instead.
+given format. If no file is provided, `domain-sift` reads from
+standard input instead.
 
-One use of this utility is to extract domains from blocklists
-that contain known malicious or otherwise undesirable domains,
-and then format them in such a way that those domains can be
-blocked by a DNS resolver.
+One use of this utility is to extract domains from blocklists that
+contain known malicious or otherwise undesirable domains, and then
+format them in such a way that those domains can be blocked by a
+DNS resolver.
 
 ## Table of Contents
 
@@ -49,10 +49,11 @@ blocked by a DNS resolver.
 
 ## Installation
 
-To install domain-sift, grab the most recent release and run the
-following commands inside the source directory. Note that domain-sift
-requires Perl 5.36 or later, since subroutine signatures are no
-longer experimental in that release.
+To install `domain-sift`, [download the most recent
+release](https://github.com/3uryd1ce/domain-sift/releases) and run
+the following commands inside the source directory. Note that
+`domain-sift` requires Perl 5.36 or later, since subroutine signatures
+are no longer experimental in that release.
 
 ```
 $ perl Makefile.PL
@@ -125,7 +126,7 @@ $ domain-sift -f unbound /path/to/blocklist_source > blocklist
 include: "/var/unbound/etc/blocklist"
 ```
 
-4. Restart `unbound`:
+4. Restart Unbound.
 
 ```
 # rcctl restart unbound
