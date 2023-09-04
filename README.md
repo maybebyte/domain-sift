@@ -54,11 +54,11 @@ following commands inside the source directory. Note that domain-sift
 requires Perl 5.36 or later, since subroutine signatures are no
 longer experimental in that release.
 
-```sh
-perl Makefile.PL
-make
-make test
-make install # as root
+```
+$ perl Makefile.PL
+$ make
+$ make test
+# make install
 ```
 
 ## Documentation
@@ -66,11 +66,11 @@ make install # as root
 After installation, you can read the documentation with `perldoc`.
 `man` often works as well.
 
-```sh
-perldoc Domain::Sift
-perldoc Domain::Sift::Match
-perldoc Domain::Sift::Manipulate
-perldoc domain-sift
+```
+$ perldoc Domain::Sift
+$ perldoc Domain::Sift::Match
+$ perldoc Domain::Sift::Manipulate
+$ perldoc domain-sift
 ```
 
 ## domain-sift and unwind
@@ -80,14 +80,14 @@ Here's how to use `domain-sift` with
 
 1. Extract domains from your blocklist source:
 
-```sh
-domain-sift /path/to/blocklist_source > blocklist
+```
+$ domain-sift /path/to/blocklist_source > blocklist
 ```
 
 2. Move your blocklist to `/etc/blocklist`:
 
-```sh
-mv blocklist /etc/blocklist # as root
+```
+# mv blocklist /etc/blocklist
 ```
 
 3. Then, modify your `unwind.conf` to include your new blocklist:
@@ -98,8 +98,8 @@ block list "/etc/blocklist"
 
 4. Restart `unwind`:
 
-```sh
-rcctl restart unwind # as root
+```
+# rcctl restart unwind
 ```
 
 ## domain-sift and unbound
@@ -109,14 +109,14 @@ Here's how to use `domain-sift` with
 
 1. Extract domains from your blocklist source:
 
-```sh
-domain-sift -f unbound /path/to/blocklist_source > blocklist
+```
+$ domain-sift -f unbound /path/to/blocklist_source > blocklist
 ```
 
 2. Move the blocklist to `/var/unbound/etc`.
 
-```sh
-mv blocklist /var/unbound/etc/blocklist # as root
+```
+# mv blocklist /var/unbound/etc/blocklist
 ```
 
 3. Then, modify your `unbound.conf` to include your new blocklist:
@@ -127,8 +127,8 @@ include: "/var/unbound/etc/blocklist"
 
 4. Restart `unbound`:
 
-```sh
-rcctl restart unbound # as root
+```
+# rcctl restart unbound
 ```
 
 ## domain-sift and unbound (RPZ)
@@ -146,8 +146,8 @@ Here's how to use `domain-sift` with Unbound and RPZ on OpenBSD.
 
 1. Extract domains from your blocklist source:
 
-```sh
-domain-sift -f rpz /path/to/blocklist_source > blocklist
+```
+$ domain-sift -f rpz /path/to/blocklist_source > blocklist
 ```
 
 2. Then, modify your `unbound.conf`:
@@ -182,14 +182,14 @@ $INCLUDE /var/unbound/etc/blocklist
 
 4. Make sure that you move `blocklist` to the correct location:
 
-```sh
-mv /path/to/blocklist /var/unbound/etc/blocklist # as root
+```
+# mv /path/to/blocklist /var/unbound/etc/blocklist
 ```
 
 5. Restart Unbound:
 
-```sh
-rcctl restart unbound # as root
+```
+# rcctl restart unbound
 ```
 
 ## Regarding blocklist sources
@@ -211,8 +211,8 @@ This is an explicit part of its design for a few reasons.
 
 Here is more or less what I use to fetch blocklists:
 
-```sh
-grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
+```
+$ grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
 ```
 
 You can find blocklist sources in many places, such as
@@ -224,10 +224,10 @@ If you've pulled in a lot of domains, Unbound may fail to start on
 OpenBSD because it doesn't have enough time to process all of them.
 You can fix this by increasing Unbound's timeout value.
 
-```sh
+```
 $ rcctl get unbound timeout
 30
-rcctl set unbound timeout 120 # as root
+# rcctl set unbound timeout 120
 $ rcctl get unbound timeout
 120
 ```
