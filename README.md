@@ -121,7 +121,7 @@ mv blocklist /var/unbound/etc/blocklist # as root
 
 3. Then, modify your `unbound.conf` to include your new blocklist:
 
-```
+```yaml
 include: "/var/unbound/etc/blocklist"
 ```
 
@@ -152,7 +152,7 @@ domain-sift -f rpz /path/to/blocklist_source > blocklist
 
 2. Then, modify your `unbound.conf`:
 
-```
+```yaml
 rpz:
   name: rpz.home.arpa
   zonefile: /var/unbound/etc/rpz-block.zone
@@ -166,7 +166,7 @@ runs on the gateway/router, ensure that a `local-data` entry is
 present somewhere so that the name you chose resolves. Something
 like this should work:
 
-```
+```yaml
 local-data: "rpz.home.arpa. IN A x.x.x.x"
 ```
 
@@ -212,7 +212,7 @@ This is an explicit part of its design for a few reasons.
 Here is more or less what I use to fetch blocklists:
 
 ```sh
-$ grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
+grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
 ```
 
 You can find blocklist sources in many places, such as
