@@ -18,7 +18,8 @@ blocked by a DNS resolver.
 5. [domain-sift and unbound](#domain-sift-and-unbound)
 6. [domain-sift and unbound (RPZ)](#domain-sift-and-unbound-rpz)
 7. [Regarding blocklist sources](#regarding-blocklist-sources)
-8. [License](#license)
+8. [Caveats](#caveats)
+9. [License](#license)
 
 ## Project structure
 
