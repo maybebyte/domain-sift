@@ -16,7 +16,7 @@ blocked by a DNS resolver.
 3. [Documentation](#documentation)
 4. [domain-sift and unwind](#domain-sift-and-unwind)
 5. [domain-sift and unbound](#domain-sift-and-unbound)
-6. [domain-sift and a Response Policy Zone (RPZ)](#domain-sift-and-a-response-policy-zone-rpz)
+6. [domain-sift and unbound (RPZ)](#domain-sift-and-unbound-rpz)
 7. [License](#license)
 
 ## Project structure
@@ -72,61 +72,76 @@ $ perldoc domain-sift
 
 ## domain-sift and unwind
 
-To use `domain-sift` with `unwind.conf(5)`, you need to generate
-the blocklist in `plain` format, which is the default setting of
-`domain-sift`.
+Here's how to use `domain-sift` with
+[`unwind(8)`](https://man.openbsd.org/unwind) on OpenBSD.
 
-Here are the steps to follow:
-
-1. Generate your blocklist:
+1. Extract domains from your blocklist source:
 
 ```
 $ domain-sift /path/to/blocklist_source > blocklist
 ```
 
-2. Then, modify your `unwind.conf` to include this blocklist:
+2. Then, modify your `unwind.conf` to include your new blocklist:
 
 ```
 block list "/path/to/blocklist"
 ```
 
+3. Restart `unwind`.
+
+```
+# rcctl restart unwind
+```
+
 ## domain-sift and unbound
 
-`domain-sift` has the `unbound` output format, which generates a
-blocklist that's compatible with `unbound.conf(5)`.
+Here's how to use `domain-sift` with
+[`unbound(8)`](https://man.openbsd.org/unbound) on OpenBSD.
 
-Here are the steps:
-
-1. Generate your blocklist:
+1. Extract domains from your blocklist source:
 
 ```
 $ domain-sift -f unbound /path/to/blocklist_source > blocklist
 ```
 
-2. Then, include the generated blocklist file in your `unbound.conf`:
+2. Move the blocklist to `/var/unbound/etc`.
 
 ```
-include: "/path/to/blocklist"
+# mv blocklist /var/unbound/etc/blocklist
 ```
 
-## domain-sift and a Response Policy Zone (RPZ)
+3. Then, modify your `unbound.conf` to include your new blocklist:
+
+```
+include: "/var/unbound/etc/blocklist"
+```
+
+4. Restart `unbound`.
+
+```
+# rcctl restart unbound
+```
+
+## domain-sift and unbound (RPZ)
 
 `domain-sift` also supports the Response Policy Zone (RPZ) format.
 [RPZ is defined in this Internet
 Draft](https://datatracker.ietf.org/doc/draft-vixie-dnsop-dns-rpz/).
+
 By using RPZ, you can define DNS blocking policies in a standardized
 way. A nice perk of using RPZ is the ability to block wildcarded
-domains.
+domains (`*.example.com` will also block `subdomain.example.com`,
+`subdomain.subdomain.example.com`, and so on).
 
-Here are the steps to generate and use RPZ with Unbound:
+Here's how to use `domain-sift` with Unbound and RPZ on OpenBSD.
 
-1. Generate your blocklist:
+1. Extract domains from your blocklist source:
 
 ```
 $ domain-sift -f rpz /path/to/blocklist_source > blocklist
 ```
 
-2. Place the following in `unbound.conf`
+2. Then, modify your `unbound.conf`:
 
 ```
 rpz:
@@ -160,6 +175,12 @@ $INCLUDE /var/unbound/etc/blocklist
 
 ```
 # mv /path/to/blocklist /var/unbound/etc/blocklist
+```
+
+5. Restart Unbound.
+
+```
+# rcctl restart unbound
 ```
 
 ## License
