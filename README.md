@@ -1,8 +1,9 @@
 # domain-sift
 
 `domain-sift` is a Perl script that extracts unique domains from
-at least one provided file and prints them to standard output. If
-no file is provided, domain-sift reads from standard input instead.
+at least one provided file and prints them to standard output in a
+given format. If no file is provided, domain-sift reads from standard
+input instead.
 
 One use of this utility is to extract domains from blocklists
 that contain known malicious or otherwise undesirable domains,
