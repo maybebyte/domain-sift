@@ -217,6 +217,20 @@ $ grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
 You can find blocklist sources in many places, such as
 [firebog.net](https://firebog.net/).
 
+## Caveats
+
+If you've pulled in a lot of domains, Unbound may fail to start on
+OpenBSD because it doesn't have enough time to process all of them.
+You can fix this by increasing Unbound's timeout value.
+
+```
+$ rcctl get unbound timeout
+30
+# rcctl set unbound timeout 120
+$ rcctl get unbound timeout
+120
+```
+
 ## License
 
 This software is Copyright © 2023 by Ashlen.
