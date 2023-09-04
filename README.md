@@ -17,7 +17,8 @@ blocked by a DNS resolver.
 4. [domain-sift and unwind](#domain-sift-and-unwind)
 5. [domain-sift and unbound](#domain-sift-and-unbound)
 6. [domain-sift and unbound (RPZ)](#domain-sift-and-unbound-rpz)
-7. [License](#license)
+7. [Regarding blocklist sources](#regarding-blocklist-sources)
+8. [License](#license)
 
 ## Project structure
 
@@ -69,6 +70,7 @@ $ perldoc Domain::Sift::Match
 $ perldoc Domain::Sift::Manipulate
 $ perldoc domain-sift
 ```
+
 
 ## domain-sift and unwind
 
@@ -188,6 +190,32 @@ $INCLUDE /var/unbound/etc/blocklist
 ```
 # rcctl restart unbound
 ```
+
+## Regarding blocklist sources
+
+To keep things simple, `domain-sift` only deals with extracting
+domains from text files and formatting them. It doesn't fetch
+blocklists or provide them.
+
+This is an explicit part of its design for a few reasons.
+
+1. It follows the Unix philosophy: do one thing well; read
+   from a file or STDIN; print to STDOUT.
+
+2. It allows `domain-sift` to use a minimum set of
+   [`pledge(2)`](https://man.openbsd.org/pledge) promises through
+   [`OpenBSD::Pledge(3p)`](https://man.openbsd.org/OpenBSD%3A%3APledge).
+
+3. The simple design makes it much more flexible and portable.
+
+Here is more or less what I use to fetch blocklists:
+
+```
+$ grep -Ev '^#' blocklist_urls | xargs -- ftp -o - | domain-sift > blocklist
+```
+
+You can find blocklist sources in many places, such as
+[firebog.net](https://firebog.net/).
 
 ## License
 
