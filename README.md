@@ -55,10 +55,10 @@ requires Perl 5.36 or later, since subroutine signatures are no
 longer experimental in that release.
 
 ```sh
-$ perl Makefile.PL
-$ make
-$ make test
-# make install
+perl Makefile.PL
+make
+make test
+make install # as root
 ```
 
 ## Documentation
@@ -67,10 +67,10 @@ After installation, you can read the documentation with `perldoc`.
 `man` often works as well.
 
 ```sh
-$ perldoc Domain::Sift
-$ perldoc Domain::Sift::Match
-$ perldoc Domain::Sift::Manipulate
-$ perldoc domain-sift
+perldoc Domain::Sift
+perldoc Domain::Sift::Match
+perldoc Domain::Sift::Manipulate
+perldoc domain-sift
 ```
 
 ## domain-sift and unwind
@@ -81,13 +81,13 @@ Here's how to use `domain-sift` with
 1. Extract domains from your blocklist source:
 
 ```sh
-$ domain-sift /path/to/blocklist_source > blocklist
+domain-sift /path/to/blocklist_source > blocklist
 ```
 
 2. Move your blocklist to `/etc/blocklist`:
 
 ```sh
-# mv blocklist /etc/blocklist
+mv blocklist /etc/blocklist # as root
 ```
 
 3. Then, modify your `unwind.conf` to include your new blocklist:
@@ -99,7 +99,7 @@ block list "/etc/blocklist"
 4. Restart `unwind`:
 
 ```sh
-# rcctl restart unwind
+rcctl restart unwind # as root
 ```
 
 ## domain-sift and unbound
@@ -110,13 +110,13 @@ Here's how to use `domain-sift` with
 1. Extract domains from your blocklist source:
 
 ```sh
-$ domain-sift -f unbound /path/to/blocklist_source > blocklist
+domain-sift -f unbound /path/to/blocklist_source > blocklist
 ```
 
 2. Move the blocklist to `/var/unbound/etc`.
 
 ```sh
-# mv blocklist /var/unbound/etc/blocklist
+mv blocklist /var/unbound/etc/blocklist # as root
 ```
 
 3. Then, modify your `unbound.conf` to include your new blocklist:
@@ -128,7 +128,7 @@ include: "/var/unbound/etc/blocklist"
 4. Restart `unbound`:
 
 ```sh
-# rcctl restart unbound
+rcctl restart unbound # as root
 ```
 
 ## domain-sift and unbound (RPZ)
@@ -147,7 +147,7 @@ Here's how to use `domain-sift` with Unbound and RPZ on OpenBSD.
 1. Extract domains from your blocklist source:
 
 ```sh
-$ domain-sift -f rpz /path/to/blocklist_source > blocklist
+domain-sift -f rpz /path/to/blocklist_source > blocklist
 ```
 
 2. Then, modify your `unbound.conf`:
@@ -175,7 +175,7 @@ address.
 
 3. Create `/var/unbound/etc/rpz-block.zone`:
 
-```
+```DNS Zone
 $ORIGIN rpz.home.arpa.
 $INCLUDE /var/unbound/etc/blocklist
 ```
@@ -183,13 +183,13 @@ $INCLUDE /var/unbound/etc/blocklist
 4. Make sure that you move `blocklist` to the correct location:
 
 ```sh
-# mv /path/to/blocklist /var/unbound/etc/blocklist
+mv /path/to/blocklist /var/unbound/etc/blocklist # as root
 ```
 
 5. Restart Unbound:
 
 ```sh
-# rcctl restart unbound
+rcctl restart unbound # as root
 ```
 
 ## Regarding blocklist sources
@@ -227,7 +227,7 @@ You can fix this by increasing Unbound's timeout value.
 ```sh
 $ rcctl get unbound timeout
 30
-# rcctl set unbound timeout 120
+rcctl set unbound timeout 120 # as root
 $ rcctl get unbound timeout
 120
 ```
