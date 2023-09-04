@@ -46,13 +46,16 @@ blocked by a DNS resolver.
 
 ## Installation
 
-To install domain-sift, run the following commands:
+To install domain-sift, grab the most recent release and run the
+following commands inside the source directory. Note that domain-sift
+requires Perl 5.36 or later, since subroutine signatures are no
+longer experimental in that release.
 
 ```
 $ perl Makefile.PL
 $ make
 $ make test
-$ make install
+# make install
 ```
 
 ## Documentation
