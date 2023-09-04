@@ -1,43 +1,23 @@
 # domain-sift
 
-This is a collection of Perl code used for matching, manipulating, and
-sifting through domains. Included in this repository along with reusable
-modules is `domain-sift`, a script to extract domains and print them out
-in several different formats.
+The `domain-sift` utility extracts unique domains from at least one
+provided file and prints them to standard output. If no file is
+provided, domain-sift reads from standard input instead.
+
+One use of this utility is to extract domains from blocklists
+that contain known malicious or otherwise undesirable domains,
+and then format them in such a way that those domains can be
+blocked by a DNS resolver.
 
 ## Table of Contents
 
-1. [Installation](#installation)
-2. [Documentation](#documentation)
-3. [Project structure](#project-structure)
-4. [domain-sift](#domain-sift-1)
-    - [Using domain-sift with unwind](#using-domain-sift-with-unwind)
-    - [Using domain-sift with unbound](#using-domain-sift-with-unbound)
-    - [Using domain-sift with a Response Policy Zone](#using-domain-sift-with-a-response-policy-zone-rpz)
-5. [License](#license)
-
-## Installation
-
-To install this module, run the following commands:
-
-```
-perl Makefile.PL
-make
-make test
-make install
-```
-
-## Documentation
-
-After installing, you can find documentation for relevant modules and
-scripts with `perldoc`. `man` often works as well.
-
-```
-perldoc Domain::Sift
-perldoc Domain::Sift::Match
-perldoc Domain::Sift::Manipulate
-perldoc domain-sift
-```
+1. [Project structure](#project-structure)
+2. [Installation](#installation)
+3. [Documentation](#documentation)
+4. [Using domain-sift with unwind](#using-domain-sift-with-unwind)
+5. [Using domain-sift with unbound](#using-domain-sift-with-unbound)
+6. [Using domain-sift with a Response Policy Zone](#using-domain-sift-with-a-response-policy-zone-rpz)
+7. [License](#license)
 
 ## Project structure
 
@@ -64,18 +44,30 @@ perldoc domain-sift
     `-- pod.t
 ```
 
-## domain-sift
+## Installation
 
-The `domain-sift` utility extracts unique domains from at least one
-provided file and prints them to standard output. If no file is
-provided, domain-sift reads from standard input instead.
+To install this module, run the following commands:
 
-One use of this utility is to extract domains from blocklists
-that contain known malicious or otherwise undesirable domains,
-and then format them in such a way that those domains can be
-blocked by a DNS resolver.
+```
+perl Makefile.PL
+make
+make test
+make install
+```
 
-### Using domain-sift with unwind
+## Documentation
+
+After installing, you can find documentation for relevant modules and
+scripts with `perldoc`. `man` often works as well.
+
+```
+perldoc Domain::Sift
+perldoc Domain::Sift::Match
+perldoc Domain::Sift::Manipulate
+perldoc domain-sift
+```
+
+## Using domain-sift with unwind
 
 To use `domain-sift` with `unwind.conf(5)`, you need to generate the blocklist
 in `plain` format, which is the default setting of `domain-sift`.
@@ -94,7 +86,7 @@ $ domain-sift /path/to/blocklist_source > blocklist
 block list "/path/to/blocklist"
 ```
 
-### Using domain-sift with unbound
+## Using domain-sift with unbound
 
 `domain-sift` has the `unbound` output format, which generates a blocklist
 that's compatible with `unbound.conf(5)`.
@@ -113,7 +105,7 @@ $ domain-sift -f unbound /path/to/blocklist_source > blocklist
 include: "/path/to/blocklist"
 ```
 
-### Using domain-sift with a Response Policy Zone (RPZ)
+## Using domain-sift with a Response Policy Zone (RPZ)
 
 `domain-sift` also supports the Response Policy Zone (RPZ) format. [RPZ is
 defined in this Internet
