@@ -20,7 +20,7 @@ my %WriteMakefileArgs = (
         #'ABC'              => '1.6',
         #'Foo::Bar::Module' => '5.0401',
     },
-	EXE_FILES => [ 'bin/domain-sift' ],
+    EXE_FILES => [ 'bin/domain-sift' ],
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Domain-Sift-*' },
 );
