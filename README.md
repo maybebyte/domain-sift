@@ -235,7 +235,7 @@ $ rcctl get unbound timeout
 
 ## License
 
-This software is Copyright © 2023 by Ashlen.
+This software is Copyright © 2023-2024 by Ashlen.
 
 This is free software, licensed under the ISC License. For more
 details, see the `LICENSE` file in the project root.
