@@ -157,9 +157,10 @@ while ( <<>> ) {
 	$unique_domains{$domain}++;
 }
 
-# XXX: Instead of sorting the entire thing at the end, maybe use a
-# binary tree to maintain a sorted array? This could lead to an
-# improvement in performance.
+# XXX: Instead of sorting the entire thing at the end, maybe use a different
+# approach to maintain a sorted array? This could lead to an improvement
+# in performance. Implementing this is a low priority, however, since this
+# is already performant enough for my needs.
 if ( $options{f} eq 'plain' ) {
 	for ( sort keys %unique_domains ) {
 		say;
