@@ -359,4 +359,222 @@ subtest 'no circular references' => sub {
 	ok( !defined $weak_ref, "Object garbage collected (no circular refs)" );
 };
 
+subtest 'contains_domains (multi-domain)' => sub {
+	my $match = Domain::Sift::Match->new();
+
+SKIP: {
+		skip "contains_domains not yet implemented", 1
+			unless $match->can('contains_domains');
+
+		is_deeply(
+			[ $match->contains_domains("example.com test.org") ],
+			[qw(example.com test.org)],
+			"contains_domains finds multiple domains"
+		);
+	}
+};
+
+subtest 'extract_domains (multi-domain)' => sub {
+	my $match = Domain::Sift::Match->new();
+
+SKIP: {
+		skip "extract_domains not yet implemented", 19
+			unless $match->can('extract_domains');
+
+		is_deeply(
+			[ $match->extract_domains("example.com example.net example.org") ],
+			[qw(example.com example.net example.org)],
+			"Extracts multiple space-separated domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("google.com\tfacebook.com") ],
+			[qw(google.com facebook.com)],
+			"Extracts multiple tab-separated domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("bing.com") ],
+			[qw(bing.com)],
+			"Single domain returns single-element list"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("# comment") ],
+			[],
+			"Comment line returns empty list"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("block example.com and test.org now") ],
+			[qw(example.com test.org)],
+			"Extracts domains embedded in text"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("127.0.0.1 example.com example.net") ],
+			[qw(example.com example.net)],
+			"Handles leading IP with multiple domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("EXAMPLE.COM Test.ORG") ],
+			[qw(example.com test.org)],
+			"Normalizes case for all extracted domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("example.com test.org example.com") ],
+			[qw(example.com test.org example.com)],
+			"Duplicate domains are preserved in output"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("just some random text") ],
+			[],
+			"Text with no domains returns empty list"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("") ],
+			[],
+			"Empty string returns empty list"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("   \t   ") ],
+			[],
+			"Whitespace-only returns empty list"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("example.com 127.0.0.1 test.org") ],
+			[],
+			"Rejects line with embedded 127.0.0.1"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("example.com,test.org;another.net") ],
+			[qw(example.com test.org another.net)],
+			"Extracts domains separated by punctuation"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("example.com test.org\r\n") ],
+			[qw(example.com test.org)],
+			"Handles CRLF with multiple domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("example.com fake.invalidtld test.org") ],
+			[qw(example.com test.org)],
+			"Skips domains with invalid TLDs"
+		);
+
+		my $many_domains = join( " ", map { "domain$_.com" } ( 1 .. 100 ) );
+		my @extracted = $match->extract_domains($many_domains);
+		is( scalar @extracted, 100, "Extracts 100 domains from single line" );
+
+		my @empty_result = $match->extract_domains("# comment");
+		is( scalar @empty_result, 0,
+			"Returns empty list (not undef) for comment line" );
+
+		is_deeply(
+			[ $match->extract_domains(
+				"valid.com not-a-domain invalid..com good.org"
+			) ],
+			[qw(valid.com good.org)],
+			"Filters out malformed domains"
+		);
+	}
+};
+
+subtest 'extract_domains edge cases' => sub {
+	my $match = Domain::Sift::Match->new();
+
+SKIP: {
+		skip "extract_domains not yet implemented", 5
+			unless $match->can('extract_domains');
+
+		is_deeply(
+			[ $match->extract_domains("valid.com invalid.fakeTLD another.org") ],
+			[qw(valid.com another.org)],
+			"/g continues matching after invalid TLD"
+		);
+
+		my $label_63 = "a" x 63;
+		is_deeply(
+			[ $match->extract_domains("$label_63.com another.org") ],
+			[ "$label_63.com", "another.org" ],
+			"63-char label with multiple domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains(
+				"_dmarc.example.com valid.org _spf.test.net"
+			) ],
+			[ "example.com", "valid.org", "test.net" ],
+			"Filters underscore prefixes across multiple domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("a.b.c.d.e.com x.y.z.org") ],
+			[ "a.b.c.d.e.com", "x.y.z.org" ],
+			"Deep nesting across multiple domains"
+		);
+
+		is_deeply(
+			[ $match->extract_domains("my-domain.com your-site.org -bad.com") ],
+			[ "my-domain.com", "your-site.org", "bad.com" ],
+			"Hyphenated domains with leading hyphen case"
+		);
+	}
+};
+
+subtest 'performance benchmark (multi-domain)' => sub {
+	use Time::HiRes qw(time);
+
+SKIP: {
+		skip "Performance tests skipped in CI", 1 if $ENV{CI};
+
+		my $match = Domain::Sift::Match->new();
+
+	SKIP: {
+			skip "extract_domains not yet implemented", 1
+				unless $match->can('extract_domains');
+
+			my @test_lines;
+			for my $i ( 1 .. 1000 ) {
+				push @test_lines, join( " ", map { "test$_-$i.com" } ( 1 .. 5 ) );
+			}
+
+			my $start_multi = time();
+			my $total_multi = 0;
+			for my $line (@test_lines) {
+				my @domains = $match->extract_domains($line);
+				$total_multi += scalar @domains;
+			}
+			my $elapsed_multi = time() - $start_multi;
+
+			my $start_single = time();
+			my $total_single = 0;
+			for my $line (@test_lines) {
+				my $domain = $match->extract_domain($line);
+				$total_single++ if $domain;
+			}
+			my $elapsed_single = time() - $start_single;
+
+			is( $total_multi, 5000, "Extracted 5 thousand domains total (multi)" );
+
+			my $overhead_ratio = $elapsed_multi / ( $elapsed_single || 0.001 );
+			diag("Single-domain: ${elapsed_single}s (1 thousand domains)");
+			diag("Multi-domain: ${elapsed_multi}s (5 thousand domains)");
+			diag("Overhead ratio: ${overhead_ratio}x");
+			diag( "Throughput: "
+					. sprintf( "%.0f", 5000 / $elapsed_multi )
+					. " domains/second" );
+		}
+	}
+};
+
 done_testing();
