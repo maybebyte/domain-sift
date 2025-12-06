@@ -12,4 +12,6 @@ t/pod-coverage.t
 t/pod.t
 t/Domain-Sift-Match.t
 t/Domain-Sift-Manipulate.t
+t/constructors.t
+t/domain-sift-cli.t
 bin/domain-sift
