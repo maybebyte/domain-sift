@@ -285,4 +285,78 @@ subtest 'extract_domain edge cases' => sub {
 		"example.xn--fiqs8s", "Domain with punycode TLD" );
 };
 
+subtest 'extract_domain performance baseline' => sub {
+	use Time::HiRes qw(time);
+
+SKIP: {
+		skip "Performance tests skipped in CI", 1 if $ENV{CI};
+
+		my $match = Domain::Sift::Match->new();
+		my @test_lines = map { "test$_.com" } ( 1 .. 1_000_000 );
+
+		my $start = time();
+		my $count = 0;
+		for my $line (@test_lines) {
+			my $domain = $match->extract_domain($line);
+			$count++ if $domain;
+		}
+		my $elapsed = time() - $start;
+
+		is( $count, 1_000_000, "Extracted 1 million domains" );
+		diag("Baseline: ${elapsed}s for 1 million domains");
+		diag( "Throughput: "
+				. sprintf( "%.0f", 1_000_000 / $elapsed )
+				. " domains/second" );
+	}
+};
+
+subtest 'constructor performance' => sub {
+	use Time::HiRes qw(time);
+
+SKIP: {
+		skip "Performance tests skipped in CI", 1 if $ENV{CI};
+
+		my $start = time();
+		for ( 1 .. 100_000 ) {
+			my $match = Domain::Sift::Match->new();
+		}
+		my $elapsed = time() - $start;
+
+		pass("Constructor instantiation timing captured");
+		diag("100 thousand instantiations: ${elapsed}s");
+	}
+};
+
+subtest 'cached pattern equivalence' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	my @test_cases = (
+		[ 'example.com', 'example.com' ],
+		[ 'sub.example.com', 'sub.example.com' ],
+		[ '_dmarc.example.com', 'example.com' ],
+		[ '-bad.com', 'bad.com' ],
+		[ 'no-valid-tld.xyz123', undef ],
+		[ '127.0.0.1', undef ],
+		[ 'a' x 64 . '.com', undef ],
+		[ 'a' x 63 . '.com', 'a' x 63 . '.com' ],
+	);
+
+	for my $case (@test_cases) {
+		my ( $input, $expected ) = @$case;
+		is( $match->contains_domain($input),
+			$expected, "contains_domain('$input')" );
+	}
+};
+
+subtest 'no circular references' => sub {
+	use Scalar::Util qw(weaken);
+
+	my $match = Domain::Sift::Match->new();
+	my $weak_ref = $match;
+	weaken($weak_ref);
+
+	undef $match;
+	ok( !defined $weak_ref, "Object garbage collected (no circular refs)" );
+};
+
 done_testing();
