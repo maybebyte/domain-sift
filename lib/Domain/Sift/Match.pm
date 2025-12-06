@@ -134,52 +134,8 @@ pattern and has a valid TLD. Otherwise contains_domain returns undef.
 =cut
 
 sub contains_domain ( $self, $example_domain ) {
-	if (
-		$example_domain =~ /
-
-		# word boundary ensures we're at the beginning of a domain
-		\b
-
-		# BEGIN domain group
-		(
-
-			# Lookahead asserts that the upcoming domain leaf contains
-			# 1-63 allowed characters before a dot
-			(?= [a-z 0-9 _-]{1,63} \.)
-
-			# Domain leaf must start with a letter or digit
-			[a-z 0-9]+
-
-			# The rest of the leaf can contain one or more allowed
-			# characters, hyphen or underscore must be between letters
-			# or digits
-			([_-]+ [a-z 0-9]+)*
-
-			# Each domain leaf ends with a dot
-			\.
-
-		# One or more domain groups
-		)+
-
-		# BEGIN Top Level Domain (TLD) group
-		(
-
-			# Punycode TLD starts with 'xn--' and is followed by 2-59
-			# allowed characters
-			(xn-- [a-z 0-9]{2,59})
-			|
-			# Alternatively, use a regular TLD that has 2-63 letters
-			[a-z]{2,63}
-
-		# END TLD group
-		)
-
-		# word boundary ensures we're at the end of a domain
-		\b
-
-		/paaxxni
-		)
-	{
+	my $pattern = $self->_domain_pattern();
+	if ( $example_domain =~ /$pattern/ ) {
 		return ${^MATCH} if $self->has_valid_tld(${^MATCH});
 	}
 	return;
