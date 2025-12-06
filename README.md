@@ -25,26 +25,29 @@ DNS resolver.
 ## Project structure
 
 ```
-|-- Changes
-|-- LICENSE
-|-- MANIFEST
-|-- Makefile.PL
-|-- README.md
-|-- bin
-|   `-- domain-sift
-|-- lib
-|   `-- Domain
-|       |-- Sift
-|       |   |-- Manipulate.pm
-|       |   `-- Match.pm
-|       `-- Sift.pm
-`-- t
-    |-- 00-load.t
-    |-- Domain-Sift-Manipulate.t
-    |-- Domain-Sift-Match.t
-    |-- manifest.t
-    |-- pod-coverage.t
-    `-- pod.t
+.
+├── Changes
+├── LICENSE
+├── MANIFEST
+├── Makefile.PL
+├── README.md
+├── bin
+│   └── domain-sift
+├── lib
+│   └── Domain
+│       ├── Sift
+│       │   ├── Manipulate.pm
+│       │   └── Match.pm
+│       └── Sift.pm
+└── t
+    ├── 00-load.t
+    ├── Domain-Sift-Manipulate.t
+    ├── Domain-Sift-Match.t
+    ├── constructors.t
+    ├── domain-sift-cli.t
+    ├── manifest.t
+    ├── pod-coverage.t
+    └── pod.t
 ```
 
 ## Installation
