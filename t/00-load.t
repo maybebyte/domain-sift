@@ -1,7 +1,6 @@
 #!perl
+
 use v5.36;
-use strict;
-use warnings;
 use Test::More;
 
 plan tests => 3;

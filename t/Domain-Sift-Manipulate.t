@@ -3,24 +3,21 @@
 use v5.36;
 use autodie;
 
-# Core modules.
-use English;
 use Test::More;
 
 BEGIN {
-	use_ok( 'Domain::Sift::Manipulate' ) || print "Bail out!\n";
+	use_ok('Domain::Sift::Manipulate') || print "Bail out!\n";
 }
 
-my $sift_manipulate = Domain::Sift::Manipulate->new();
-
 subtest 'reduce_domains' => sub {
+	my $manipulate = Domain::Sift::Manipulate->new();
 	## Test case 1: No redundant domains
 	my $hashref1 = {
 		'example.com' => 1,
 		'example.net' => 1,
 		'example.org' => 1
 	};
-	my $result1 = $sift_manipulate->reduce_domains($hashref1);
+	my $result1 = $manipulate->reduce_domains($hashref1);
 	is_deeply( $result1, {}, "No redundant domains" );
 
 	# Test case 2: One redundant domain
@@ -31,7 +28,7 @@ subtest 'reduce_domains' => sub {
 		'example.org' => 1
 	};
 	my $expected_result2 = { 'sub.example.com' => 'example.com', };
-	my $result2 = $sift_manipulate->reduce_domains($hashref2);
+	my $result2 = $manipulate->reduce_domains($hashref2);
 	is_deeply( $result2, $expected_result2, "One redundant domain" );
 
 	# Test case 3: Multiple redundant domains
@@ -46,7 +43,7 @@ subtest 'reduce_domains' => sub {
 		'sub.example.com' => 'example.com',
 		'sub.sub.example.com' => 'example.com',
 	};
-	my $result3 = $sift_manipulate->reduce_domains($hashref3);
+	my $result3 = $manipulate->reduce_domains($hashref3);
 	is_deeply( $result3, $expected_result3, "Multiple redundant domains" );
 };
 
