@@ -1,4 +1,4 @@
-use 5.006;
+use v5.36;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
@@ -9,7 +9,7 @@ my %WriteMakefileArgs = (
     VERSION_FROM     => 'lib/Domain/Sift.pm',
     ABSTRACT_FROM    => 'lib/Domain/Sift.pm',
     LICENSE          => 'open_source',
-    MIN_PERL_VERSION => '5.006',
+    MIN_PERL_VERSION => '5.036',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
