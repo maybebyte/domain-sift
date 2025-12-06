@@ -47,63 +47,59 @@ contains a list of valid top-level domains.
 # Keep in sync with https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 my %valid_tlds;
 
+# IMPORTANT: /p modifier is required for ${^MATCH} to capture matched text.
+# Removing /p will cause contains_domain() and contains_domains() to return
+# empty strings instead of the matched domain.
+#
+# Package-level pattern compiled once at module load for performance.
+# Used by contains_domain() and contains_domains().
+our $DOMAIN_PATTERN = qr/
+
+	# word boundary ensures we're at the beginning of a domain
+	\b
+
+	# BEGIN domain group
+	(
+
+		# Lookahead asserts that the upcoming domain leaf contains
+		# 1-63 allowed characters before a dot
+		(?= [a-z 0-9 _-]{1,63} \.)
+
+		# Domain leaf must start with a letter or digit
+		[a-z 0-9]+
+
+		# The rest of the leaf can contain one or more allowed
+		# characters, hyphen or underscore must be between letters
+		# or digits
+		([_-]+ [a-z 0-9]+)*
+
+		# Each domain leaf ends with a dot
+		\.
+
+	# One or more domain groups
+	)+
+
+	# BEGIN Top Level Domain (TLD) group
+	(
+
+		# Punycode TLD starts with 'xn--' and is followed by 2-59
+		# allowed characters
+		(xn-- [a-z 0-9]{2,59})
+		|
+		# Alternatively, use a regular TLD that has 2-63 letters
+		[a-z]{2,63}
+
+	# END TLD group
+	)
+
+	# word boundary ensures we're at the end of a domain
+	\b
+
+/paaxxni;
+
 sub new ($class) {
 	my $self = { valid_tlds => \%valid_tlds };
-	bless $self, $class;
-
-	# IMPORTANT: /p modifier is required for ${^MATCH} to capture matched text.
-	# Removing /p will cause contains_domain() and contains_domains() to return
-	# empty strings instead of the matched domain.
-	$self->{domain_pattern} = qr/
-
-		# word boundary ensures we're at the beginning of a domain
-		\b
-
-		# BEGIN domain group
-		(
-
-			# Lookahead asserts that the upcoming domain leaf contains
-			# 1-63 allowed characters before a dot
-			(?= [a-z 0-9 _-]{1,63} \.)
-
-			# Domain leaf must start with a letter or digit
-			[a-z 0-9]+
-
-			# The rest of the leaf can contain one or more allowed
-			# characters, hyphen or underscore must be between letters
-			# or digits
-			([_-]+ [a-z 0-9]+)*
-
-			# Each domain leaf ends with a dot
-			\.
-
-		# One or more domain groups
-		)+
-
-		# BEGIN Top Level Domain (TLD) group
-		(
-
-			# Punycode TLD starts with 'xn--' and is followed by 2-59
-			# allowed characters
-			(xn-- [a-z 0-9]{2,59})
-			|
-			# Alternatively, use a regular TLD that has 2-63 letters
-			[a-z]{2,63}
-
-		# END TLD group
-		)
-
-		# word boundary ensures we're at the end of a domain
-		\b
-
-	/paaxxni;
-
-	return $self;
-}
-
-# Private method - returns cached compiled domain regex pattern
-sub _domain_pattern ($self) {
-	return $self->{domain_pattern} // die "Pattern not initialized - constructor failed?";
+	return bless $self, $class;
 }
 
 =head2 has_valid_tld
@@ -134,8 +130,7 @@ pattern and has a valid TLD. Otherwise contains_domain returns undef.
 =cut
 
 sub contains_domain ( $self, $example_domain ) {
-	my $pattern = $self->_domain_pattern();
-	if ( $example_domain =~ /$pattern/ ) {
+	if ( $example_domain =~ /$DOMAIN_PATTERN/ ) {
 		return ${^MATCH} if $self->has_valid_tld(${^MATCH});
 	}
 	return;
