@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Ashlen <dev@anthes.is>
+# Copyright (c) 2023-2025 Ashlen <dev@anthes.is>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -166,7 +166,7 @@ https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 
 =head1 LICENSE AND COPYRIGHT
 
-This software is Copyright (c) 2023-2024 by Ashlen.
+This software is Copyright (c) 2023-2025 by Ashlen.
 
 This is free software, licensed under the ISC license.
 
