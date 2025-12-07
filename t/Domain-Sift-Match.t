@@ -194,11 +194,11 @@ subtest 'contains_domain edge cases' => sub {
 	is( $match->contains_domain("192-168-1-1.example.com"),
 		"192-168-1-1.example.com", "IP-like subdomain with hyphens" );
 
-	# Underscore prefix - extracts valid portion
+	# Underscore prefix - RFC 8552 service records preserved
 	is( $match->contains_domain("_dmarc.example.com"),
-		"example.com", "Underscore prefix: extracts example.com" );
+		"_dmarc.example.com", "Underscore prefix: preserves _dmarc" );
 	is( $match->contains_domain("_spf.mail.example.com"),
-		"mail.example.com", "Underscore prefix with subdomain" );
+		"_spf.mail.example.com", "Underscore prefix with subdomain preserved" );
 
 	# Label length edge cases (max 63 chars per label)
 	my $label_63 = "a" x 63;
@@ -335,7 +335,7 @@ subtest 'cached pattern equivalence' => sub {
 	my @test_cases = (
 		[ 'example.com', 'example.com' ],
 		[ 'sub.example.com', 'sub.example.com' ],
-		[ '_dmarc.example.com', 'example.com' ],
+		[ '_dmarc.example.com', '_dmarc.example.com' ],
 		[ '-bad.com', 'bad.com' ],
 		[ 'no-valid-tld.xyz123', undef ],
 		[ '127.0.0.1', undef ],
@@ -523,8 +523,8 @@ SKIP: {
 			[ $match->extract_domains(
 				"_dmarc.example.com valid.org _spf.test.net"
 			) ],
-			[ "example.com", "valid.org", "test.net" ],
-			"Filters underscore prefixes across multiple domains"
+			[ "_dmarc.example.com", "valid.org", "_spf.test.net" ],
+			"Preserves underscore prefixes across multiple domains"
 		);
 
 		is_deeply(
