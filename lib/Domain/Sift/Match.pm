@@ -195,7 +195,31 @@ Returns an empty list if no valid domains are found.
 sub contains_domains ( $self, $text ) {
 	my @domains;
 	while ( $text =~ /$DOMAIN_PATTERN/g ) {
-		push @domains, ${^MATCH} if $self->has_valid_tld(${^MATCH});
+		my $match = ${^MATCH};
+		my $pos = $-[0];  # Match start position
+
+		# Skip lone underscore label preceding this match
+		next if $pos >= 2 && substr($text, $pos - 2, 2) eq '_.';
+
+		# Skip mid-label underscore immediately preceding this match
+		next if $pos >= 1 && substr($text, $pos - 1, 1) eq '_';
+
+		# Skip hyphen-underscore boundary
+		next if $pos >= 1 && substr($text, $pos, 1) eq '_'
+		                  && substr($text, $pos - 1, 1) eq '-';
+
+		# Look back to domain boundary (whitespace/punctuation) and check
+		# if that segment has invalid underscores. This catches backtracking
+		# from e.g., __bad.example.com -> example.com
+		if ($pos > 0) {
+			my $prefix = substr($text, 0, $pos);
+			if ($prefix =~ /(\S+)\z/) {
+				next if _has_invalid_underscore($1);
+			}
+		}
+
+		next if _has_invalid_underscore($match);
+		push @domains, $match if $self->has_valid_tld($match);
 	}
 	return @domains;
 }
