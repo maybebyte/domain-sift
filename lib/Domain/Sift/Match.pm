@@ -69,13 +69,12 @@ our $DOMAIN_PATTERN = qr/
 		# 1-63 allowed characters before a dot
 		(?= [a-z 0-9 _-]{1,63} \.)
 
-		# Domain leaf must start with a letter or digit
-		[a-z 0-9]+
+		# Domain label: optional underscore (RFC 8552), then alphanumeric
+		_? [a-z 0-9]+
 
-		# The rest of the leaf can contain one or more allowed
-		# characters, hyphen or underscore must be between letters
-		# or digits
-		([_-]+ [a-z 0-9]+)*
+		# The rest of the leaf can contain hyphens between
+		# letters or digits (underscores only at label start)
+		([-]+ [a-z 0-9]+)*
 
 		# Each domain leaf ends with a dot
 		\.
