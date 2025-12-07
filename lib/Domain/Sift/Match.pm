@@ -136,6 +136,30 @@ sub contains_domain ( $self, $example_domain ) {
 	return;
 }
 
+=head2 contains_domains
+
+    my @valid_domains = $sift_match->contains_domains($text);
+
+Returns all valid domains found in the given text. Unlike contains_domain
+which returns only the first match, this method returns a list of all
+domains with valid TLDs.
+
+Duplicate domains within the same text are preserved in the order they
+appear. This allows the caller to perform frequency analysis if needed.
+Most use cases will deduplicate via a hash.
+
+Returns an empty list if no valid domains are found.
+
+=cut
+
+sub contains_domains ( $self, $text ) {
+	my @domains;
+	while ( $text =~ /$DOMAIN_PATTERN/g ) {
+		push @domains, ${^MATCH} if $self->has_valid_tld(${^MATCH});
+	}
+	return @domains;
+}
+
 =head2 extract_domain
 
     my $extracted_domain = $sift_match->extract_domain($example_line);
