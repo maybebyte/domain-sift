@@ -48,7 +48,7 @@ contains a list of valid top-level domains.
 =cut
 
 # Defined at the end of the file due to length.
-# Keep in sync with https://data.iana.org/TLD/tlds-alpha-by-domain.txt
+# NOTE: Keep in sync with https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 my %valid_tlds;
 
 # IMPORTANT: /p modifier is required for ${^MATCH} to capture matched text.
@@ -124,6 +124,7 @@ sub has_valid_tld ( $self, $domain ){
 # Valid: _dmarc.example.com, _443._tcp.example.com
 # Invalid: foo_bar.example.com (mid-label), __dmarc.example.com (double)
 sub _has_invalid_underscore ($domain) {
+	return 0 unless index($domain, '_') >= 0;      # Fast path: no underscores
 	return 1 if $domain =~ /__/;                   # Double underscore
 	return 1 if $domain =~ /[a-z0-9]_[a-z0-9]/i;   # Mid-label underscore
 	return 1 if $domain =~ /_\./;                  # Lone underscore OR trailing before dot
