@@ -275,6 +275,8 @@ subtest 'extract_domain edge cases' => sub {
 		"subdomain.example.com", "Full uppercase normalized to lowercase" );
 	is( $match->extract_domain("SubDomain.Example.Com"),
 		"subdomain.example.com", "Mixed case normalized to lowercase" );
+	is( $match->extract_domain("_DMARC.EXAMPLE.COM"),
+		"_dmarc.example.com", "Underscore domain normalized to lowercase" );
 
 	# Punycode domains
 	is( $match->extract_domain("xn--nxasmq5b.com"),
@@ -641,6 +643,23 @@ subtest 'RFC 8552 underscore-prefixed labels' => sub {
 		"_a._b._c._d.example.com", "Deep underscore nesting preserved" );
 	is( $match->contains_domain("sub._dmarc.example.com"),
 		"sub._dmarc.example.com", "Normal subdomain under service label preserved" );
+
+	# contains_domains: skips invalid, keeps valid
+	is_deeply(
+		[ $match->contains_domains("_dmarc.example.com valid.org _spf.test.net") ],
+		[ "_dmarc.example.com", "valid.org", "_spf.test.net" ],
+		"Preserves underscore prefixes across multiple domains"
+	);
+	is_deeply(
+		[ $match->contains_domains("valid.com __bad.example.com another.org") ],
+		[ "valid.com", "another.org" ],
+		"Skips double-underscore domain, keeps valid ones"
+	);
+	is_deeply(
+		[ $match->contains_domains("foo_bar.com _dmarc.test.org good.net") ],
+		[ "_dmarc.test.org", "good.net" ],
+		"Skips mid-label underscore, keeps valid ones"
+	);
 };
 
 done_testing();
