@@ -145,9 +145,33 @@ pattern and has a valid TLD. Otherwise contains_domain returns undef.
 
 =cut
 
-sub contains_domain ( $self, $example_domain ) {
-	if ( $example_domain =~ /$DOMAIN_PATTERN/ ) {
-		return ${^MATCH} if $self->has_valid_tld(${^MATCH});
+sub contains_domain ( $self, $text ) {
+	if ( $text =~ /$DOMAIN_PATTERN/p ) {
+		my $match = ${^MATCH};
+		my $pos = $-[0];  # Match start position
+
+		# Check for lone underscore label preceding match (_.example.com)
+		return if $pos >= 2 && substr($text, $pos - 2, 2) eq '_.';
+
+		# Check for mid-label underscore immediately preceding match
+		# The regex backtracks past mid-label underscores, extracting partial domain
+		# E.g., foo_bar.example.com -> regex matches bar.example.com
+		return if $pos >= 1 && substr($text, $pos - 1, 1) eq '_';
+
+		# Check for hyphen-underscore boundary (e.g., _foo-_bar.example.com)
+		# Match starts with _ and preceding char is -
+		return if $pos >= 1 && substr($text, $pos, 1) eq '_'
+		                    && substr($text, $pos - 1, 1) eq '-';
+
+		# STRICT: Scan entire prefix for invalid underscore patterns
+		# Catches cases where regex backtracked past invalid patterns
+		if ($pos > 0) {
+			my $prefix = substr($text, 0, $pos);
+			return if _has_invalid_underscore($prefix);
+		}
+
+		return if _has_invalid_underscore($match);
+		return $match if $self->has_valid_tld($match);
 	}
 	return;
 }
