@@ -153,8 +153,9 @@ my $sift_match = Domain::Sift::Match->new();
 my %unique_domains;
 
 while ( <<>> ) {
-	my $domain = $sift_match->extract_domain($ARG) or next;
-	$unique_domains{$domain}++;
+	for my $domain ( $sift_match->extract_domains($ARG) ) {
+		$unique_domains{$domain}++;
+	}
 }
 
 # XXX: Instead of sorting the entire thing at the end, maybe use a different
