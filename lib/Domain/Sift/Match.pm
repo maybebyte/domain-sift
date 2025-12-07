@@ -143,6 +143,10 @@ checks the top-level domain (TLD) against a preloaded list of valid
 TLDs. Returns the domain if the string matches the established domain
 pattern and has a valid TLD. Otherwise contains_domain returns undef.
 
+Underscore-prefixed labels (RFC 8552 service discovery) are preserved:
+C<_dmarc.example.com> returns C<_dmarc.example.com>. Invalid underscore
+patterns (mid-label, double, trailing) cause the method to return undef.
+
 =cut
 
 sub contains_domain ( $self, $text ) {
@@ -183,6 +187,10 @@ sub contains_domain ( $self, $text ) {
 Returns all valid domains found in the given text. Unlike contains_domain
 which returns only the first match, this method returns a list of all
 domains with valid TLDs.
+
+Underscore-prefixed labels (RFC 8552 service discovery) are preserved.
+Invalid underscore patterns are skipped rather than causing rejection
+of the entire input, allowing valid domains to still be extracted.
 
 Duplicate domains within the same text are preserved in the order they
 appear. This allows the caller to perform frequency analysis if needed.
@@ -275,6 +283,9 @@ Created and maintained by Ashlen <dev@anthes.is>
 RFC 1034, Domain names - concepts and facilities
 
 RFC 2181, Clarifications to the DNS Specification
+
+RFC 8552, Scoped Interpretation of DNS Resource Records through
+"Underscored" Naming of Attribute Leaves
 
 IANA top-level domains list
 https://data.iana.org/TLD/tlds-alpha-by-domain.txt
