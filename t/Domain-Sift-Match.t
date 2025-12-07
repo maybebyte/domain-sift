@@ -605,6 +605,42 @@ subtest 'RFC 8552 underscore-prefixed labels' => sub {
 		"_dmarc.xn--nxasmq5b.com", "Underscore prefix with punycode" );
 	is( $match->contains_domain("_123.example.com"),
 		"_123.example.com", "Numeric-only label after underscore" );
+
+	# Invalid patterns (should reject)
+	ok( !$match->contains_domain("__dmarc.example.com"),
+		"Double underscore rejected" );
+	ok( !$match->contains_domain("foo_bar.example.com"),
+		"Mid-label underscore rejected" );
+	ok( !$match->contains_domain("_foo_bar.example.com"),
+		"Mid-label underscore after valid start rejected" );
+	ok( !$match->contains_domain("_.example.com"),
+		"Lone underscore label rejected" );
+	ok( !$match->contains_domain("example_.com"),
+		"Trailing underscore in label rejected" );
+	ok( !$match->contains_domain("example_.org"),
+		"Trailing underscore before TLD rejected" );
+	ok( !$match->contains_domain("foo___bar.example.com"),
+		"Triple underscore sequence rejected" );
+	ok( !$match->contains_domain("test_.sub.example.com"),
+		"Trailing underscore in subdomain rejected" );
+	ok( !$match->contains_domain("_-weird.example.com"),
+		"Underscore-hyphen label rejected (strict interpretation)" );
+	ok( !$match->contains_domain("_foo-bar_.example.com"),
+		"Trailing underscore after hyphen rejected" );
+	ok( !$match->contains_domain("_foo-_bar.example.com"),
+		"Hyphen-underscore sequence rejected" );
+
+	# Non-adjacent invalid underscore (regex backtracks, must scan prefix)
+	ok( !$match->contains_domain("valid.foo_bar.example.com"),
+		"Mid-label underscore in earlier label rejected (prefix scan)" );
+	ok( !$match->contains_domain("a.b.foo_bar.c.example.com"),
+		"Mid-label underscore deep in subdomain rejected" );
+
+	# Edge cases that SHOULD be preserved
+	is( $match->contains_domain("_a._b._c._d.example.com"),
+		"_a._b._c._d.example.com", "Deep underscore nesting preserved" );
+	is( $match->contains_domain("sub._dmarc.example.com"),
+		"sub._dmarc.example.com", "Normal subdomain under service label preserved" );
 };
 
 done_testing();
