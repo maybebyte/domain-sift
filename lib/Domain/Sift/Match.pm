@@ -148,6 +148,7 @@ addresses. Domain names are treated as case-insensitive.
 
 sub extract_domain ( $self, $line ) {
 	chomp $line;
+	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
 	$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
