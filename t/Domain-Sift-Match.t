@@ -447,10 +447,18 @@ SKIP: {
 			"Whitespace-only returns empty list"
 		);
 
+		# Embedded IPs are skipped (not valid domains), valid domains still extracted
 		is_deeply(
 			[ $match->extract_domains("example.com 127.0.0.1 test.org") ],
+			[qw(example.com test.org)],
+			"Skips space-separated IP, extracts valid domains"
+		);
+
+		# IP directly adjacent to text (no space) rejects entire line
+		is_deeply(
+			[ $match->extract_domains("evil127.0.0.1.com") ],
 			[],
-			"Rejects line with embedded 127.0.0.1"
+			"Rejects line with IP adjacent to text"
 		);
 
 		is_deeply(

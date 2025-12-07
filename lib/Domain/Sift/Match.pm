@@ -181,6 +181,27 @@ sub extract_domain ( $self, $line ) {
 	return $self->contains_domain( lc($line) );
 }
 
+=head2 extract_domains
+
+    my @extracted_domains = $sift_match->extract_domains($line);
+
+Extracts and returns all domains from a given line of text. Like
+extract_domain, it ignores comments and blank lines and handles
+IP addresses, but returns all valid domains instead of just the first.
+
+=cut
+
+sub extract_domains ( $self, $line ) {
+	chomp $line;
+	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
+
+	return if $line =~ /\A \s* (\#|\z)/aaxxn;
+	$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
+	return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
+
+	return $self->contains_domains( lc($line) );
+}
+
 =head1 AUTHOR
 
 Created and maintained by Ashlen <dev@anthes.is>
