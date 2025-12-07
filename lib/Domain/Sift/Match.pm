@@ -146,7 +146,7 @@ pattern and has a valid TLD. Otherwise contains_domain returns undef.
 =cut
 
 sub contains_domain ( $self, $text ) {
-	if ( $text =~ /$DOMAIN_PATTERN/p ) {
+	if ( $text =~ /$DOMAIN_PATTERN/ ) {
 		my $match = ${^MATCH};
 		my $pos = $-[0];  # Match start position
 
