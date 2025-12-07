@@ -32,6 +32,10 @@ Domain::Sift::Match offers a set of methods for matching domains.
     my $is_valid_tld = $sift_match->has_valid_tld($example_domain);
     my $valid_domain = $sift_match->contains_domain($example_domain);
 
+    # Extract all domains from text
+    my @all_domains = $sift_match->contains_domains($text);
+    my @extracted = $sift_match->extract_domains($line);
+
 =head1 SUBROUTINES/METHODS
 
 =head2 new
