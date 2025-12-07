@@ -4,3 +4,7 @@ MYMETA.yml
 Makefile
 blib/
 pm_to_blib
+
+# Profiling output (NYTProf)
+nytprof.out
+nytprof_*/
