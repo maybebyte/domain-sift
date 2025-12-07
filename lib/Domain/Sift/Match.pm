@@ -120,6 +120,19 @@ sub has_valid_tld ( $self, $domain ){
 	return exists $self->{valid_tlds}{ uc($tld) }
 }
 
+# RFC 8552: Underscores allowed only at label start (service records)
+# Valid: _dmarc.example.com, _443._tcp.example.com
+# Invalid: foo_bar.example.com (mid-label), __dmarc.example.com (double)
+sub _has_invalid_underscore ($domain) {
+	return 1 if $domain =~ /__/;                   # Double underscore
+	return 1 if $domain =~ /[a-z0-9]_[a-z0-9]/i;   # Mid-label underscore
+	return 1 if $domain =~ /_\./;                  # Lone underscore OR trailing before dot
+	return 1 if $domain =~ /[a-z0-9-]_$/i;         # Trailing underscore at end
+	return 1 if $domain =~ /(?:^|\.)_-/;           # Underscore-hyphen at label start
+	return 1 if $domain =~ /-_/;                   # Hyphen-underscore sequence
+	return 0;
+}
+
 =head2 contains_domain
 
     my $valid_domain = $sift_match->contains_domain($example_domain);
