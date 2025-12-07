@@ -585,4 +585,26 @@ SKIP: {
 	}
 };
 
+subtest 'RFC 8552 underscore-prefixed labels' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# Valid service records (should preserve)
+	is( $match->contains_domain("_dmarc.example.com"),
+		"_dmarc.example.com", "DMARC service record preserved" );
+	is( $match->contains_domain("_spf.mail.example.com"),
+		"_spf.mail.example.com", "SPF service record preserved" );
+	is( $match->contains_domain("_443._tcp.example.com"),
+		"_443._tcp.example.com", "TLSA record preserved" );
+	is( $match->contains_domain("_domainkey.example.com"),
+		"_domainkey.example.com", "DKIM record preserved" );
+	is( $match->contains_domain("_acme-challenge.example.com"),
+		"_acme-challenge.example.com", "ACME challenge preserved" );
+	is( $match->contains_domain("_a._b._c.example.com"),
+		"_a._b._c.example.com", "Multiple underscore labels preserved" );
+	is( $match->contains_domain("_dmarc.xn--nxasmq5b.com"),
+		"_dmarc.xn--nxasmq5b.com", "Underscore prefix with punycode" );
+	is( $match->contains_domain("_123.example.com"),
+		"_123.example.com", "Numeric-only label after underscore" );
+};
+
 done_testing();
