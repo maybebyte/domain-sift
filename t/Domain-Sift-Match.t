@@ -22,6 +22,14 @@ BEGIN {
 	use_ok('Domain::Sift::Match') || print "Bail out!\n";
 }
 
+subtest 'TLD file loading' => sub {
+	my $match = Domain::Sift::Match->new();
+	# Verify reasonable TLD count (IANA has ~1,400+)
+	# Access via object instance since %valid_tlds is lexical
+	cmp_ok( scalar keys $match->{valid_tlds}->%*, '>', 1200,
+		'TLD count exceeds 1200 (IANA baseline)' );
+};
+
 subtest 'has_valid_tld' => sub {
 	my $match = Domain::Sift::Match->new();
 
