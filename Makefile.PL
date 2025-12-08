@@ -21,6 +21,12 @@ my %WriteMakefileArgs = (
         #'Foo::Bar::Module' => '5.0401',
     },
     EXE_FILES => [ 'bin/domain-sift' ],
+    PM => {
+        'lib/Domain/Sift.pm'            => '$(INST_LIB)/Domain/Sift.pm',
+        'lib/Domain/Sift/Match.pm'      => '$(INST_LIB)/Domain/Sift/Match.pm',
+        'lib/Domain/Sift/Manipulate.pm' => '$(INST_LIB)/Domain/Sift/Manipulate.pm',
+        'lib/Domain/Sift/tlds.txt'      => '$(INST_LIB)/Domain/Sift/tlds.txt',
+    },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Domain-Sift-*' },
 );
