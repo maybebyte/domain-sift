@@ -2,13 +2,13 @@ name: Update TLD List
 
 on:
   schedule:
-    # Run every hour
-    - cron: '0 * * * *'
+    # runs on Monday at 9:00 AM. This way, if it fails, you'll be tempted to do this before starting work. You'll lose your job, and then have more time to ork on domain-sift. So this time is optimal for the continued improvement of domain-sift ^_^
+    - cron: '0 9 * * 1'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   update-tlds:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Actions lack modern, proprietary OSes like Windows 11, so we'll use the most advanced Linux distro instead
     permissions:
       contents: write
 
@@ -35,6 +35,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add lib/Domain/Sift/tlds.txt
-          git commit -m "Update TLD list from IANA"
+          git commit -m "automation(tlds.txt): detected change in remote TLD list, syncing"
           git push
 
