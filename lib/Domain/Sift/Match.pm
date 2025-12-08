@@ -57,6 +57,9 @@ my %valid_tlds;
 #
 # Package-level pattern compiled once at module load for performance.
 # Used by contains_domain() and contains_domains().
+#
+# Possessive quantifiers (++, *+) prevent backtracking for ReDoS mitigation.
+# Labels require trailing dot; TLD does not - natural boundary for possessive.
 our $DOMAIN_PATTERN = qr/
 
 	# word boundary ensures we're at the beginning of a domain
@@ -65,22 +68,21 @@ our $DOMAIN_PATTERN = qr/
 	# BEGIN domain group
 	(
 
-		# Lookahead asserts that the upcoming domain leaf contains
+		# Lookahead asserts that the upcoming domain label contains
 		# 1-63 allowed characters before a dot
 		(?= [a-z 0-9 _-]{1,63} \.)
 
-		# Domain label: optional underscore (RFC 8552), then alphanumeric
-		_? [a-z 0-9]+
+		# Domain label start: alphanumeric or underscore
+		[a-z 0-9 _]++
 
-		# The rest of the leaf can contain hyphens between
-		# letters or digits (underscores only at label start)
-		([-]+ [a-z 0-9]+)*
+		# Middle of label: hyphens and underscores followed by alphanumeric
+		([-_]*+ [a-z 0-9]++)*
 
-		# Each domain leaf ends with a dot
+		# Each domain label ends with a dot
 		\.
 
-	# One or more domain groups
-	)+
+	# One or more domain groups (possessive)
+	)++
 
 	# BEGIN Top Level Domain (TLD) group
 	(
@@ -153,28 +155,6 @@ patterns (mid-label, double, trailing) cause the method to return undef.
 sub contains_domain ( $self, $text ) {
 	if ( $text =~ /$DOMAIN_PATTERN/ ) {
 		my $match = ${^MATCH};
-		my $pos = $-[0];  # Match start position
-
-		# Check for lone underscore label preceding match (_.example.com)
-		return if $pos >= 2 && substr($text, $pos - 2, 2) eq '_.';
-
-		# Check for mid-label underscore immediately preceding match
-		# The regex backtracks past mid-label underscores, extracting partial domain
-		# E.g., foo_bar.example.com -> regex matches bar.example.com
-		return if $pos >= 1 && substr($text, $pos - 1, 1) eq '_';
-
-		# Check for hyphen-underscore boundary (e.g., _foo-_bar.example.com)
-		# Match starts with _ and preceding char is -
-		return if $pos >= 1 && substr($text, $pos, 1) eq '_'
-		                    && substr($text, $pos - 1, 1) eq '-';
-
-		# STRICT: Scan entire prefix for invalid underscore patterns
-		# Catches cases where regex backtracked past invalid patterns
-		if ($pos > 0) {
-			my $prefix = substr($text, 0, $pos);
-			return if _has_invalid_underscore($prefix);
-		}
-
 		return if _has_invalid_underscore($match);
 		return $match if $self->has_valid_tld($match);
 	}
@@ -205,28 +185,6 @@ sub contains_domains ( $self, $text ) {
 	my @domains;
 	while ( $text =~ /$DOMAIN_PATTERN/g ) {
 		my $match = ${^MATCH};
-		my $pos = $-[0];  # Match start position
-
-		# Skip lone underscore label preceding this match
-		next if $pos >= 2 && substr($text, $pos - 2, 2) eq '_.';
-
-		# Skip mid-label underscore immediately preceding this match
-		next if $pos >= 1 && substr($text, $pos - 1, 1) eq '_';
-
-		# Skip hyphen-underscore boundary
-		next if $pos >= 1 && substr($text, $pos, 1) eq '_'
-		                  && substr($text, $pos - 1, 1) eq '-';
-
-		# Look back to domain boundary (whitespace/punctuation) and check
-		# if that segment has invalid underscores. This catches backtracking
-		# from e.g., __bad.example.com -> example.com
-		if ($pos > 0) {
-			my $prefix = substr($text, 0, $pos);
-			if ($prefix =~ /(\S+)\z/) {
-				next if _has_invalid_underscore($1);
-			}
-		}
-
 		next if _has_invalid_underscore($match);
 		push @domains, $match if $self->has_valid_tld($match);
 	}
