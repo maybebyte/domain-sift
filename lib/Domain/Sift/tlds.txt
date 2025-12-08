@@ -1,6 +1,4 @@
-# IANA TLD List (Uppercase)
-# Source: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
-# Format: One TLD per line, comments start with #, blank lines ignored
+# Version 2025120700, Last Updated Sun Dec  7 07:07:01 2025 UTC
 AAA
 AARP
 ABB
