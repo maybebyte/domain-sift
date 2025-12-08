@@ -58,8 +58,8 @@ my %valid_tlds;
 # Package-level pattern compiled once at module load for performance.
 # Used by contains_domain() and contains_domains().
 #
-# Possessive quantifiers (++, *+) prevent backtracking for ReDoS mitigation.
-# Labels require trailing dot; TLD does not - natural boundary for possessive.
+# Possessive quantifiers (++, *+) prevent backtracking, eliminating the need
+# for a prefix scanning loop to handle invalid patterns like 'foo_bar.example.com'.
 our $DOMAIN_PATTERN = qr/
 
 	# word boundary ensures we're at the beginning of a domain
