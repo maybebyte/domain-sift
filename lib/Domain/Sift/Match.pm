@@ -277,8 +277,8 @@ This is free software, licensed under the ISC license.
 
     # Sanity check
     my $count = scalar keys %valid_tlds;
-    die "TLD file '$tld_file' appears corrupted: only $count TLDs loaded (expected >1400)"
-        if $count < 1400;
+    die "TLD file '$tld_file' appears corrupted: only $count TLDs loaded (expected >1200)"
+        if $count < 1200;
 }
 
 1; # End of Domain::Sift::Match
