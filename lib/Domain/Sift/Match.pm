@@ -121,7 +121,7 @@ TLD from the domain and verifies its presence in the list of valid TLDs.
 # Regular expressions are avoided here due to their performance cost.
 sub has_valid_tld ( $self, $domain ){
 	my $tld = substr $domain, rindex( $domain, '.' ) + 1;
-	return exists $self->{valid_tlds}{ uc($tld) }
+	return exists $self->{valid_tlds}{ lc($tld) }
 }
 
 # RFC 8552: Underscores allowed only at label start (service records)
@@ -156,7 +156,7 @@ patterns (mid-label, double, trailing) cause the method to return undef.
 
 sub contains_domain ( $self, $text ) {
 	if ( $text =~ /$DOMAIN_PATTERN/ ) {
-		my $match = ${^MATCH};
+		my $match = lc( ${^MATCH} );
 		return if _has_invalid_underscore($match);
 		return $match if $self->has_valid_tld($match);
 	}
@@ -186,7 +186,7 @@ Returns an empty list if no valid domains are found.
 sub contains_domains ( $self, $text ) {
 	my @domains;
 	while ( $text =~ /$DOMAIN_PATTERN/g ) {
-		my $match = ${^MATCH};
+		my $match = lc( ${^MATCH} );
 		next if _has_invalid_underscore($match);
 		push @domains, $match if $self->has_valid_tld($match);
 	}
@@ -213,7 +213,7 @@ sub extract_domain ( $self, $line ) {
 		return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
 	}
 
-	return $self->contains_domain( lc($line) );
+	return $self->contains_domain($line);
 }
 
 =head2 extract_domains
@@ -236,7 +236,7 @@ sub extract_domains ( $self, $line ) {
 		return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
 	}
 
-	return $self->contains_domains( lc($line) );
+	return $self->contains_domains($line);
 }
 
 =head1 AUTHOR
@@ -275,7 +275,7 @@ This is free software, licensed under the ISC license.
         $tld =~ s/\A\s+|\s+\z//g;    # Trim whitespace
         next if $tld eq '';          # Skip blank lines
         next if $tld =~ /\A#/;       # Skip comments
-        $valid_tlds{ uc($tld) } = 1; # Normalize to uppercase
+        $valid_tlds{ lc($tld) } = 1; # Normalize to lowercase
     }
     close $fh or warn "Failed to close '$tld_file': $!";
 

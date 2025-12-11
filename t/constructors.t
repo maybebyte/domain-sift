@@ -40,10 +40,10 @@ subtest 'Domain::Sift::Match - constructor' => sub {
 		'valid_tlds contains over 1000 TLDs'
 	);
 
-	# Spot-check common TLDs
-	ok( $match->{valid_tlds}{COM}, 'COM TLD present' );
-	ok( $match->{valid_tlds}{NET}, 'NET TLD present' );
-	ok( $match->{valid_tlds}{ORG}, 'ORG TLD present' );
+	# Spot-check common TLDs (stored as lowercase)
+	ok( $match->{valid_tlds}{com}, 'com TLD present' );
+	ok( $match->{valid_tlds}{net}, 'net TLD present' );
+	ok( $match->{valid_tlds}{org}, 'org TLD present' );
 };
 
 subtest 'Domain::Sift::Manipulate - constructor' => sub {
