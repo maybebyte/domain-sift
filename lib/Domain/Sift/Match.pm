@@ -208,8 +208,10 @@ sub extract_domain ( $self, $line ) {
 	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
-	$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
-	return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
+	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
+		$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
+		return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
+	}
 
 	return $self->contains_domain( lc($line) );
 }
@@ -229,8 +231,10 @@ sub extract_domains ( $self, $line ) {
 	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
-	$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
-	return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
+	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
+		$line =~ s/\A \s* (127\.0\.0\.1|0\.0\.0\.0) \s*//aaxxn;
+		return if $line =~ /\B (127\.0\.0\.1|0\.0\.0\.0)/aaxxn;
+	}
 
 	return $self->contains_domains( lc($line) );
 }
