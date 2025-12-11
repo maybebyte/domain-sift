@@ -205,7 +205,7 @@ addresses. Domain names are treated as case-insensitive.
 
 sub extract_domain ( $self, $line ) {
 	chomp $line;
-	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
+	chop $line if substr($line, -1) eq "\r";  # Handle Windows line endings
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
 	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
@@ -228,7 +228,7 @@ IP addresses, but returns all valid domains instead of just the first.
 
 sub extract_domains ( $self, $line ) {
 	chomp $line;
-	$line =~ s/\r\z//;  # Handle Windows line endings on Unix
+	chop $line if substr($line, -1) eq "\r";  # Handle Windows line endings
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
 	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
