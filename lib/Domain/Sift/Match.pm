@@ -49,7 +49,7 @@ contains a list of valid top-level domains.
 
 =cut
 
-# Defined at the end of the file due to length.
+# Defined at the end of the file.
 # NOTE: Keep in sync with https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 my %valid_tlds;
 
