@@ -1,0 +1,39 @@
+name: Test Suite
+
+on:
+  pull_request:
+    branches: ['*']
+  push:
+    branches: ['*']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        perl-version: ['5.36', '5.38', '5.40']
+
+    name: Perl ${{ matrix.perl-version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl-version }}
+
+      - name: Install dependencies
+        run: |
+          cpanm --installdeps --notest .
+
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+
+      - name: Run tests
+        run: make test
+
