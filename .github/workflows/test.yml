@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 15
 
     strategy:
+      fail-fast: false
       matrix:
         perl-version: ['5.36', '5.38', '5.40']
 
