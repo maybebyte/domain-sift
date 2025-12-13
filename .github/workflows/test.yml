@@ -26,16 +26,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Setup Perl
-        uses: shogo82148/actions-setup-perl@1358ec99f8d1069243050e42a75a3cdce3e91607 # v1.9.7
+        uses: shogo82148/actions-setup-perl@661f315378634d1cc9bc014c26690c8f0509c07f # v1.9.7
         with:
           perl-version: ${{ matrix.perl-version }}
 
       - name: Cache CPAN modules
         id: cache-cpan
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/perl5
           key: ${{ runner.os }}-perl-${{ matrix.perl-version }}-${{ hashFiles('Makefile.PL', 'META.json') }}
