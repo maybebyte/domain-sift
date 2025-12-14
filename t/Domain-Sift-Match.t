@@ -793,4 +793,31 @@ subtest 'very large input lines' => sub {
 	}
 };
 
+subtest 'null bytes and control characters' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# Control characters should not be valid word separators
+	# Any input containing control chars should reject
+
+	# Null byte in input
+	ok( !defined $match->extract_domain("exam\x00ple.com"),
+		"Null byte in input: reject" );
+	ok( !defined $match->extract_domain("\x00example.com"),
+		"Null byte prefix: reject" );
+	ok( !defined $match->extract_domain("example.com\x00"),
+		"Null byte suffix: reject" );
+
+	# Other control characters
+	ok( !defined $match->extract_domain("exam\x01ple.com"),
+		"SOH control char: reject" );
+	ok( !defined $match->extract_domain("exam\x7Fple.com"),
+		"DEL control char: reject" );
+
+	# ANSI escape sequences
+	ok( !defined $match->extract_domain("\x1B[31mexample.com\x1B[0m"),
+		"ANSI escape sequence: reject" );
+	ok( !defined $match->extract_domain("\x1B[0mtest.org"),
+		"ANSI reset prefix: reject" );
+};
+
 done_testing();
