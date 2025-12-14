@@ -697,4 +697,35 @@ subtest 'FQDN format (trailing dot)' => sub {
 	);
 };
 
+subtest 'domain with port numbers' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# Word boundary correctly separates domain from port
+	is( $match->extract_domain("example.com:8080"),
+		"example.com", "Domain with port: extracts domain only" );
+	is( $match->extract_domain("example.com:443"),
+		"example.com", "Domain with HTTPS port" );
+	is( $match->extract_domain("sub.example.com:3000"),
+		"sub.example.com", "Subdomain with port" );
+
+	# URL context with port
+	is( $match->extract_domain("http://example.com:8080/path"),
+		"example.com", "URL with port extracts domain" );
+
+	# Trailing colon
+	is( $match->extract_domain("example.com:"),
+		"example.com", "Trailing colon only" );
+
+	# IP:port doesn't match (invalid TLD), so domain:port found
+	is( $match->extract_domain("127.0.0.1:8080 example.com:3000"),
+		"example.com", "IP:port skipped, domain:port extracted" );
+
+	# extract_domains with ports
+	is_deeply(
+		[ $match->extract_domains("example.com:8080 test.org:443") ],
+		[qw(example.com test.org)],
+		"Multiple domains with ports extracted"
+	);
+};
+
 done_testing();
