@@ -1,5 +1,14 @@
 Revision history for Domain-Sift
 
+0.2.0   2025/12/13
+        Added extract_domains() and contains_domains() for multi-domain extraction.
+        CLI now extracts all domains per line instead of just the first.
+        Added RFC 8552 support for underscore-prefixed service records
+        (_dmarc, _spf, _443._tcp, etc.).
+        Externalized TLD list to tlds.txt with automated weekly sync via PR.
+        Performance improvements: possessive quantifiers, cached patterns,
+        index() fast paths.
+
 0.1.2   2023/09/04
         Cleaned up README and added more information.
         Updated TLD list in Domain::Sift::Match.
