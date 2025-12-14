@@ -762,4 +762,35 @@ subtest 'maximum domain length (RFC 1035)' => sub {
 		$max_len, "Domain at 253 chars accepted" );
 };
 
+subtest 'very large input lines' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# 10KB line with domain in middle
+	my $large_10k = "X" x 5000 . " example.com " . "X" x 5000;
+	is( $match->extract_domain($large_10k),
+		"example.com", "Extracts domain from 10KB line" );
+
+	# 100KB line
+	my $large_100k = "Y" x 50000 . " test.org " . "Y" x 50000;
+	is( $match->extract_domain($large_100k),
+		"test.org", "Extracts domain from 100KB line" );
+
+	# No domain in large line (tests regex rejection performance)
+	my $no_match_large = "X" x 10000 . " no valid domain " . "X" x 10000;
+	ok( !defined $match->extract_domain($no_match_large),
+		"Returns undef for large line without domain" );
+
+	# Many invalid TLD candidates (regex stress)
+	my $many_invalid = join( " ", map { "word$_.fake" } ( 1 .. 1000 ) );
+	ok( !defined $match->extract_domain($many_invalid),
+		"Handles 1000 invalid TLD candidates" );
+
+	SKIP: {
+		skip "1MB memory test skipped in CI", 1 if $ENV{CI};
+		my $large_1mb = "Z" x 500_000 . " large.net " . "Z" x 500_000;
+		is( $match->extract_domain($large_1mb),
+			"large.net", "Extracts domain from 1MB line" );
+	}
+};
+
 done_testing();
