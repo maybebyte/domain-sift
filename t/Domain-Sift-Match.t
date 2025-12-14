@@ -670,4 +670,31 @@ subtest 'RFC 8552 underscore-prefixed labels' => sub {
 	);
 };
 
+subtest 'FQDN format (trailing dot)' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# FQDN format (trailing dot) SHOULD be supported
+	# RFC 1035 defines trailing dot as canonical fully-qualified form
+
+	ok( $match->has_valid_tld("example.com."),
+		"has_valid_tld: FQDN with trailing dot should be recognized" );
+
+	is( $match->contains_domain("example.com."),
+		"example.com", "contains_domain: FQDN extracts domain without dot" );
+
+	is( $match->extract_domain("example.com."),
+		"example.com", "extract_domain: FQDN extracts domain without dot" );
+
+	# FQDN mixed with regular domain - both should be extracted
+	is( $match->extract_domain("example.com. test.org"),
+		"example.com", "extract_domain: FQDN extracted first" );
+
+	# extract_domains should handle FQDN entries
+	is_deeply(
+		[ $match->extract_domains("example.com. test.org another.net.") ],
+		[qw(example.com test.org another.net)],
+		"extract_domains: extracts both FQDN and regular domains"
+	);
+};
+
 done_testing();
