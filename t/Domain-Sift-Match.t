@@ -728,4 +728,38 @@ subtest 'domain with port numbers' => sub {
 	);
 };
 
+subtest 'maximum domain length (RFC 1035)' => sub {
+	my $match = Domain::Sift::Match->new();
+
+	# Valid: 63-char label (max per RFC 1035)
+	my $label_63 = "a" x 63;
+	is( $match->contains_domain("$label_63.com"),
+		"$label_63.com", "63-char label (max per RFC) accepted" );
+
+	# Valid: Multiple 63-char labels
+	my $multi_63 = "$label_63.$label_63.com";    # 131 chars
+	is( $match->contains_domain($multi_63),
+		$multi_63, "Two 63-char labels accepted" );
+
+	# Valid: Deep nesting (many short labels)
+	my $deep_50 = join( ".", ("a") x 50 ) . ".com";    # 103 chars
+	is( $match->contains_domain($deep_50),
+		$deep_50, "50 single-char labels accepted" );
+
+	# Invalid: 64-char label exceeds limit
+	my $label_64 = "a" x 64;
+	ok( !$match->contains_domain("$label_64.com"),
+		"64-char label (exceeds RFC limit) rejected" );
+
+	# RFC 1035 total domain length limit (253 chars) SHOULD be enforced
+	my $too_long = join( ".", ("ab") x 85 ) . ".com";    # 85*3 + 3 = 258 chars
+	ok( !$match->contains_domain($too_long),
+		"Domain exceeding 253 chars rejected (RFC 1035)" );
+
+	# Domain at exactly 253 chars should be accepted
+	my $max_len = join( ".", ("aaaa") x 50 ) . ".com";
+	is( $match->contains_domain($max_len),
+		$max_len, "Domain at 253 chars accepted" );
+};
+
 done_testing();
