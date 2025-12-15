@@ -26,7 +26,7 @@ Manipulate domains.
     use Domain::Sift::Manipulate;
 
     my $sift_manipulate = Domain::Sift::Manipulate->new();
-    my %domains = ( 'example.com', 'subdomain.example.com' );
+    my %domains = ( 'example.com' => 1, 'subdomain.example.com' => 1 );
 
     # remove subdomain.example.com since *.example.com would match it
     $sift_manipulate->reduce_domains(\%domains);
