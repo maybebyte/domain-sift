@@ -14,7 +14,6 @@
 
 package Domain::Sift::Match;
 use v5.36;
-use English;
 use File::Spec ();
 use File::Basename qw(dirname);
 

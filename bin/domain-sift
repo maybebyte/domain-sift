@@ -97,7 +97,6 @@ I<rpz> format:
 use v5.36;
 use autodie;
 
-use English;
 use File::Basename qw(fileparse);
 use Getopt::Std;
 
@@ -105,7 +104,7 @@ use Domain::Sift::Match;
 use Domain::Sift::Manipulate;
 
 BEGIN {
-	if ( $OSNAME eq 'openbsd' ) {
+	if ( $^O eq 'openbsd' ) {
 		require OpenBSD::Pledge;
 		require OpenBSD::Unveil;
 		OpenBSD::Pledge->import('pledge');
@@ -118,12 +117,12 @@ BEGIN {
 }
 
 sub pledge_or_die (@syscalls) {
-	pledge @syscalls or die "Pledge failed: $OS_ERROR";
+	pledge @syscalls or die "Pledge failed: $!";
 }
 
 sub unveil_or_die (%file_perms) {
 	while ( my ( $file, $file_perms ) = each %file_perms ) {
-		unveil $file, $file_perms or die "Unveil failed: $OS_ERROR";
+		unveil $file, $file_perms or die "Unveil failed: $!";
 	}
 }
 
@@ -135,7 +134,7 @@ EOT
 }
 
 if ( !@ARGV ) {
-	unveil_or_die map { ( $ARG, 'r' ) } @INC;
+	unveil_or_die map { ( $_, 'r' ) } @INC;
 }
 pledge_or_die qw(rpath);
 
@@ -146,14 +145,14 @@ getopts 'hf:', \%options;
 usage if $options{h};
 
 my @formats = qw(plain unbound rpz);
-grep { $options{f} eq $ARG } @formats
+grep { $options{f} eq $_ } @formats
 	or die "$options{f} is not a valid format.\n";
 
 my $sift_match = Domain::Sift::Match->new();
 my %unique_domains;
 
 while ( <<>> ) {
-	for my $domain ( $sift_match->extract_domains($ARG) ) {
+	for my $domain ( $sift_match->extract_domains($_) ) {
 		$unique_domains{$domain}++;
 	}
 }
@@ -169,7 +168,7 @@ if ( $options{f} eq 'plain' ) {
 }
 elsif ( $options{f} eq 'unbound' ) {
 	for ( sort keys %unique_domains ) {
-		say "local-zone: \"$ARG\" always_refuse";
+		say "local-zone: \"$_\" always_refuse";
 	}
 }
 elsif ( $options{f} eq 'rpz' ) {
