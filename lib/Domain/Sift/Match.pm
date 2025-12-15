@@ -14,6 +14,8 @@
 
 package Domain::Sift::Match;
 use v5.36;
+use utf8;
+
 use Carp qw(croak);
 use File::Spec ();
 use File::Basename qw(dirname);

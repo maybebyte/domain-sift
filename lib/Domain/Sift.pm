@@ -16,6 +16,8 @@ package Domain::Sift;
 # ABSTRACT: tools to sift through domains
 
 use v5.36;
+use utf8;
+
 our $VERSION = '0.2.0';
 
 =head1 NAME
