@@ -14,6 +14,7 @@
 
 package Domain::Sift::Match;
 use v5.36;
+use Carp qw(croak);
 use File::Spec ();
 use File::Basename qw(dirname);
 
@@ -267,7 +268,7 @@ This is free software, licensed under the ISC license.
 {
     my $tld_file = File::Spec->catfile( dirname(__FILE__), 'tlds.txt' );
     open my $fh, '<', $tld_file
-        or die "Cannot open TLD file '$tld_file': $!";
+        or croak "Cannot open TLD file '$tld_file': $!";
     while ( my $tld = <$fh> ) {
         chomp $tld;
         $tld =~ s/\r\z//;            # Handle Windows line endings
@@ -280,7 +281,7 @@ This is free software, licensed under the ISC license.
 
     # Sanity check
     my $count = scalar keys %valid_tlds;
-    die "TLD file '$tld_file' appears corrupted: only $count TLDs loaded (expected >1200)"
+    croak "TLD file '$tld_file' appears corrupted: only $count TLDs loaded (expected >1200)"
         if $count < 1200;
 }
 
