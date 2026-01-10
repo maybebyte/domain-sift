@@ -41,7 +41,7 @@ jobs:
           readonly MIN_TLD_COUNT=1200
 
           # Validate header format (strict - matches entire line)
-          readonly HEADER_REGEX='^# Version [0-9]{10}, Last Updated (Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4} UTC$'
+          readonly HEADER_REGEX='^#[ \t]+Version[ \t]+[0-9]{10},[ \t]+Last[ \t]+Updated[ \t]+(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[ \t]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ \t]+[0-9]{1,2}[ \t]+[0-9]{2}:[0-9]{2}:[0-9]{2}[ \t]+[0-9]{4}[ \t]+UTC$'
           if ! head -1 "${FILE}" | grep -qE "${HEADER_REGEX}"; then
             printf '%s\n' "ERROR: Invalid header format" >&2
             printf '%s\n' "Expected format: # Version NNNNNNNNNN, Last Updated Day Mon DD HH:MM:SS YYYY UTC" >&2
