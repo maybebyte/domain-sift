@@ -178,7 +178,7 @@ elsif ( $options{f} eq 'rpz' ) {
 	$sift_manipulate->reduce_domains( \%unique_domains );
 
 	for ( sort keys %unique_domains ) {
-		say "$ARG CNAME .";
-		say "*.$ARG CNAME .";
+		say "$_ CNAME .";
+		say "*.$_ CNAME .";
 	}
 }

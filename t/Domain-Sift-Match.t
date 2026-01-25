@@ -176,10 +176,10 @@ subtest 'has_valid_tld edge cases' => sub {
 	# Just a dot
 	ok( !$match->has_valid_tld("."), "Just a dot returns false" );
 
-	# Trailing dot (FQDN format)
+	# Trailing dot without TLD (not FQDN, just label with dot)
 	ok(
-		!$match->has_valid_tld("example.com."),
-		"Trailing dot returns false (empty TLD)"
+		!$match->has_valid_tld("example."),
+		"Trailing dot without TLD returns false (empty TLD)"
 	);
 };
 
@@ -818,6 +818,23 @@ subtest 'null bytes and control characters' => sub {
 		"ANSI escape sequence: reject" );
 	ok( !defined $match->extract_domain("\x1B[0mtest.org"),
 		"ANSI reset prefix: reject" );
+
+	# extract_domains should also reject control characters
+	is_deeply(
+		[ $match->extract_domains("exam\x00ple.com test.org") ],
+		[],
+		"extract_domains: null byte rejects entire line"
+	);
+	is_deeply(
+		[ $match->extract_domains("\x1B[31mexample.com\x1B[0m") ],
+		[],
+		"extract_domains: ANSI escape rejects entire line"
+	);
+	is_deeply(
+		[ $match->extract_domains("valid.com\x01evil.org") ],
+		[],
+		"extract_domains: SOH control char rejects entire line"
+	);
 };
 
 done_testing();

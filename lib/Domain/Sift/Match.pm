@@ -85,8 +85,12 @@ our $DOMAIN_PATTERN = qr/
 		# Each domain label ends with a dot
 		\.
 
-	# One or more domain groups (possessive)
-	)++
+	# One or more domain groups.
+	# Non-possessive: possessive )++ would consume the trailing dot in
+	# FQDN format (example.com.) as a label separator, then fail on TLD
+	# match without backtracking. Non-possessive )+ allows the regex
+	# engine to backtrack and let \.? handle the trailing dot instead.
+	)+
 
 	# BEGIN Top Level Domain (TLD) group
 	(
@@ -103,6 +107,9 @@ our $DOMAIN_PATTERN = qr/
 
 	# word boundary ensures we're at the end of a domain
 	\b
+
+	# Optional trailing dot for FQDN format (RFC 1035)
+	\.?
 
 /paaxxni;
 
@@ -122,7 +129,14 @@ TLD from the domain and verifies its presence in the list of valid TLDs.
 
 # Regular expressions are avoided here due to their performance cost.
 sub has_valid_tld ( $self, $domain ){
-	my $tld = substr $domain, rindex( $domain, '.' ) + 1;
+	# Handle FQDN format with trailing dot (RFC 1035)
+	$domain = substr($domain, 0, -1) if length($domain) && substr($domain, -1) eq '.';
+
+	# Must have at least one dot to have a TLD
+	my $dot_pos = rindex($domain, '.');
+	return 0 if $dot_pos < 0;
+
+	my $tld = substr $domain, $dot_pos + 1;
 	return exists $self->{valid_tlds}{ lc($tld) }
 }
 
@@ -156,10 +170,24 @@ patterns (mid-label, double, trailing) cause the method to return undef.
 
 =cut
 
+# RFC 1035: Total domain length must not exceed 253 characters
+sub _exceeds_max_length ($domain) {
+	return length($domain) > 253;
+}
+
+# Reject input containing control characters (null bytes, ANSI escapes, etc.)
+# Control chars are ASCII 0x00-0x1F and 0x7F, excluding tab (0x09) which is valid whitespace
+sub _has_control_chars ($text) {
+	return $text =~ /[\x{00}-\x{08}\x{0A}-\x{1F}\x{7F}]/;
+}
+
 sub contains_domain ( $self, $text ) {
 	if ( $text =~ /$DOMAIN_PATTERN/ ) {
 		my $match = lc( ${^MATCH} );
+		# Strip trailing dot from FQDN format
+		$match = substr($match, 0, -1) if substr($match, -1) eq '.';
 		return if _has_invalid_underscore($match);
+		return if _exceeds_max_length($match);
 		return $match if $self->has_valid_tld($match);
 	}
 	return;
@@ -189,7 +217,10 @@ sub contains_domains ( $self, $text ) {
 	my @domains;
 	while ( $text =~ /$DOMAIN_PATTERN/g ) {
 		my $match = lc( ${^MATCH} );
+		# Strip trailing dot from FQDN format
+		$match = substr($match, 0, -1) if substr($match, -1) eq '.';
 		next if _has_invalid_underscore($match);
+		next if _exceeds_max_length($match);
 		push @domains, $match if $self->has_valid_tld($match);
 	}
 	return @domains;
@@ -208,6 +239,9 @@ addresses. Domain names are treated as case-insensitive.
 sub extract_domain ( $self, $line ) {
 	chomp $line;
 	chop $line if substr($line, -1) eq "\r";  # Handle Windows line endings
+
+	# Reject lines with control characters (null bytes, ANSI escapes, etc.)
+	return if _has_control_chars($line);
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
 	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
@@ -231,6 +265,9 @@ IP addresses, but returns all valid domains instead of just the first.
 sub extract_domains ( $self, $line ) {
 	chomp $line;
 	chop $line if substr($line, -1) eq "\r";  # Handle Windows line endings
+
+	# Reject lines with control characters (null bytes, ANSI escapes, etc.)
+	return if _has_control_chars($line);
 
 	return if $line =~ /\A \s* (\#|\z)/aaxxn;
 	if (index($line, '127.') >= 0 || index($line, '0.0.') >= 0) {
